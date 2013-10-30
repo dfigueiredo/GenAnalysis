@@ -34,10 +34,10 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     TH1F* hPartCMSEta;
     TH1F* hPartCMSPt;
     TH1F* hPartCMSPhi;
-    hHFMinusEGEN;
-    hHFPlusEGEN;
-    hCastorEGEN;
-    TH1F* hEnergyvsEta;
+    TH1F* hHFMinusEGEN;
+    TH1F* hHFPlusEGEN;
+    TH1F* hCastorEGEN;
+    TH1F* hEnergyvsEtaCMS;
     TH1F* hBosonPt;
     TH1F* hBosonEta;
     TH1F* hBosonPhi;
@@ -91,34 +91,36 @@ void SDDYAnalyzer::beginJob(){
 
 
   hPartEta = fs->make<TH1F>("hPartEta","hPartEta",2000,-10.,10.);
-  hPartPt = fs->make<TH1F>("hPartPt","hPartPt",1000,0.,1000.);
-  hPartPhi = fs->make<TH1F>("hPartPhi","hPartPhi",100,-3.141592,3.141592);
+  hPartPt = fs->make<TH1F>("hPartPt","hPartPt",100,0.,100.);
+  hPartPhi = fs->make<TH1F>("hPartPhi","hPartPhi",50,-3.141592,3.141592);
   hPartCMSEta = fs->make<TH1F>("hPartCMSEta","hPartCMSEta",2000,-10.,10.);
-  hPartCMSPt = fs->make<TH1F>("hPartCMSPt","hPartCMSPt",1000,0.,1000.);
-  hPartCMSPhi = fs->make<TH1F>("hPartCMSPhi","hPartCMSPhi",100,-3.141592,3.141592);
+  hPartCMSPt = fs->make<TH1F>("hPartCMSPt","hPartCMSPt",100,0.,100.);
+  hPartCMSPhi = fs->make<TH1F>("hPartCMSPhi","hPartCMSPhi",50,-3.141592,3.141592);
   hEnergyvsEtaCMS = fs->make<TH1F>("hEnergyvsEtaCMS","hEnergyvsEtaCMS",100,-15.0,15.0);
   hHFMinusEGEN = fs->make<TH1F>("hHFMinusEGEN","hHFMinusGen",1000,0,1000);
   hHFPlusEGEN = fs->make<TH1F>("hHFMinusEGEN","hHFMinusGen",1000,0,1000);
   hCastorEGEN = fs->make<TH1F>("hCastorEGEN","hCastorEGen",1000,0,1000);
   hBosonPt = fs->make<TH1F>("hBosonPt","hBosonPt",100,0.,50.);
   hBosonEta = fs->make<TH1F>("hBosonEta","hBosonEta",100,-5.,5.);
-  hBosonPhi = fs->make<TH1F>("hBosonPhi","hBosonPhi",100,-3.141592,3.141592);
+  hBosonPhi = fs->make<TH1F>("hBosonPhi","hBosonPhi",50,-3.141592,3.141592);
   hBosonM = fs->make<TH1F>("hBosonM","hBosonM",100,40.,150.);
   hBosonPtDiff = fs->make<TH1F>("hBosonPtDiff","hBosonPtDiff",100,0.,50.);
   hBosonEtaDiff = fs->make<TH1F>("hBosonEtaDiff","hBosonEtaDiff",100,-5.,5.);
-  hBosonPhiDiff = fs->make<TH1F>("hBosonPhiDiff","hBosonPhiDiff",100,-3.141592,3.141592);
+  hBosonPhiDiff = fs->make<TH1F>("hBosonPhiDiff","hBosonPhiDiff",50,-3.141592,3.141592);
   hBosonMDiff = fs->make<TH1F>("hBosonMDiff","hBosonMDiff",100,40.,150.);
 
   nevents = 0;
 }
 
 void SDDYAnalyzer::endJob(){
-  hEnergyvsEta->Scale(1/(float)nevents);	
+  hEnergyvsEtaCMS->Scale(1/(float)nevents);	
 }
 
 void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
   bool debug = false;
+  bool lepton1 = false;
+  bool lepton2 = false;
   nevents++;
 
   // Generator Particles
@@ -142,48 +144,54 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
     hPartEta->Fill(genpart->eta());
     hPartPhi->Fill(genpart->phi());
 
-    if (genpart->eta() > 5.2 || genpart->eta() < -6.2){
-      hPartCMSPt->Fill(genpart->pt());
-      hPartCMSEta->Fill(genpart->eta());
-      hPartCMSPhi->Fill(genpart->phi());
-      continue; // CMS acceptance.
-    }
+    if (genpart->eta() > 5.2 || genpart->eta() < -6.2) continue;
 
-    hEnergyvsEta->Fill(genpart->eta(),genpart->energy());
+    hPartCMSPt->Fill(genpart->pt());
+    hPartCMSEta->Fill(genpart->eta());
+    hPartCMSPhi->Fill(genpart->phi());
+    hEnergyvsEtaCMS->Fill(genpart->eta(),genpart->energy());
 
     if (genpart->eta() <= -5.2 && genpart->eta() >= -6.2) sumCastorGEN += genpart->energy();
     if (genpart->eta() <= -3 && genpart->eta() >= -5.2) sumHFMinusGEN += genpart->energy();
     if (genpart->eta() >= 3 && genpart->eta() <= 5.2) sumHFPlusGEN += genpart->energy();
 
-    if((particle1 == genParticles->end())&&(abs(genpart->pdgId()) == abs(particle1Id_))) {particle1 = genpart;continue;}
-    if((particle2 == genParticles->end())&&(abs(genpart->pdgId()) == abs(particle2Id_))) {particle2 = genpart;continue;}
+    if((particle1 == genParticles->end())&&(abs(genpart->pdgId()) == abs(particle1Id_))) {particle1 = genpart;lepton1=true;continue;}
+    if((particle2 == genParticles->end())&&(abs(genpart->pdgId()) == abs(particle2Id_))) {particle2 = genpart;lepton2=true;continue;}
 
   }
 
-  if (particle1->px() > 10. && particle2->px() > 10.) {
-    if ((particle1->eta() > -2.5 && particle1->eta()<2.5) && (particle2->eta() > -2.5 && particle2->eta()<2.5) ){
-      math::XYZTLorentzVector myboson(particle1->px() + particle2->px(),
-	  particle1->py() + particle2->py(),
-	  particle1->pz() + particle2->pz(),
-	  particle1->energy() + particle2->energy());
+  if (lepton1 && lepton2){
+    if (debug) std::cout << "Di lepton selected" << std::endl;
+    if (particle1->pt() > 10. && particle2->pt() > 10.) {
+      if (debug) std::cout << "Di lepton pT cut" << std::endl;
+      if((particle1->eta() > -2.5 && particle1->eta()< 2.5) && (particle2->eta() > -2.5 && particle2->eta()< 2.5) ){
+	if (debug) std::cout << "Di lepton CMS acceptance cut" << std::endl;
 
-      if (myboson.M() >= 60 && myboson.M() <= 110){
-	hBosonPt->Fill(myboson.pt());
-	hBosonEta->Fill(myboson.eta());
-	hBosonPhi->Fill(myboson.phi());
-	hBosonM->Fill(myboson.M());
+	math::XYZTLorentzVector myboson(particle1->px() + particle2->px(),
+	    particle1->py() + particle2->py(),
+	    particle1->pz() + particle2->pz(),
+	    particle1->energy() + particle2->energy());
+
+	if (myboson.M() >= 60 && myboson.M() <= 110){
+	  hBosonPt->Fill(myboson.pt());
+	  hBosonEta->Fill(myboson.eta());
+	  hBosonPhi->Fill(myboson.phi());
+	  hBosonM->Fill(myboson.M());
+	  hHFMinusEGEN->Fill(sumHFMinusGEN);
+	  hHFPlusEGEN->Fill(sumHFPlusGEN);
+	  hCastorEGEN->Fill(sumCastorGEN);
+	}
+
+	if ((myboson.M() >= 60 && myboson.M() <= 110) && sumHFMinusGEN == 0. && sumCastorGEN == 0.){
+	  hBosonPtDiff->Fill(myboson.pt());
+	  hBosonEtaDiff->Fill(myboson.eta());
+	  hBosonPhiDiff->Fill(myboson.phi());
+	  hBosonMDiff->Fill(myboson.M());
+	}
 
       }
-      if ((myboson.M() >= 60 && myboson.M() <= 110) && sumHFMinusGEN == 0. && sumCastorGEN == 0.){
-	hBosonPtDiff->Fill(myboson.pt());
-	hBosonEtaDiff->Fill(myboson.eta());
-	hBosonPhiDiff->Fill(myboson.phi());
-	hBosonMDiff->Fill(myboson.M());
-      }
-
     }
   }
-
 }	
 
 DEFINE_FWK_MODULE(SDDYAnalyzer);
