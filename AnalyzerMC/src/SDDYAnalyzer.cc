@@ -5,45 +5,51 @@
 #include "TH1F.h"
 
 class SDDYAnalyzer: public edm::EDAnalyzer {
-public:
-  /// Constructor
-  SDDYAnalyzer(const edm::ParameterSet& pset);
+  public:
+    /// Constructor
+    SDDYAnalyzer(const edm::ParameterSet& pset);
 
-  /// Destructor
-  virtual ~SDDYAnalyzer();
+    /// Destructor
+    virtual ~SDDYAnalyzer();
 
-  // Operations
+    // Operations
 
-  void analyze(const edm::Event & event, const edm::EventSetup& eventSetup);
+    void analyze(const edm::Event & event, const edm::EventSetup& eventSetup);
 
-  //virtual void beginJob(const edm::EventSetup& eventSetup) ;
-  virtual void beginJob(); 
-  virtual void endJob() ;
+    //virtual void beginJob(const edm::EventSetup& eventSetup) ;
+    virtual void beginJob(); 
+    virtual void endJob() ;
 
-private:
-  // Input from cfg file
-  edm::InputTag genParticlesTag_;
-  double Ebeam_;
-  int particle1Id_;
-  int particle2Id_;
+  private:
+    // Input from cfg file
+    edm::InputTag genParticlesTag_;
+    double Ebeam_;
+    int particle1Id_;
+    int particle2Id_;
 
-  // Histograms
-  TH1F* hPart1Pt;
-  TH1F* hPart1Eta;
-  TH1F* hPart1Phi;
-  TH1F* hPart2Pt;
-  TH1F* hPart2Eta;
-  TH1F* hPart2Phi;
-  TH1F* hBosonPt;
-  TH1F* hBosonEta;
-  TH1F* hBosonPhi;
-  TH1F* hBosonM;
-  TH1F* hEnergyvsEta;
-  TH1F* hXiGen;
-  TH1F* hProtonPt2;	
+    // Histograms
+    TH1F* hPartEta;
+    TH1F* hPartPt;
+    TH1F* hPartPhi;
+    TH1F* hPartCMSEta;
+    TH1F* hPartCMSPt;
+    TH1F* hPartCMSPhi;
+    hHFMinusEGEN;
+    hHFPlusEGEN;
+    hCastorEGEN;
+    TH1F* hEnergyvsEta;
+    TH1F* hBosonPt;
+    TH1F* hBosonEta;
+    TH1F* hBosonPhi;
+    TH1F* hBosonM;
+    TH1F* hBosonPtDiff;
+    TH1F* hBosonEtaDiff;
+    TH1F* hBosonPhiDiff;
+    TH1F* hBosonMDiff;
 
-  int nevents;
-  bool debug;
+    int nevents;
+    bool debug;
+
 };
 
 ////////// Source code ////////////////////////////////////////////////
@@ -70,8 +76,8 @@ SDDYAnalyzer::SDDYAnalyzer(const edm::ParameterSet& pset)
 
   debug = pset.getUntrackedParameter<bool>("debug",false);
   if(debug){
-	std::cout << ">>> First particle Id: " << particle1Id_ << std::endl;
-	std::cout << ">>> Second particle Id: " << particle2Id_ << std::endl;
+    std::cout << ">>> First particle Id: " << particle1Id_ << std::endl;
+    std::cout << ">>> Second particle Id: " << particle2Id_ << std::endl;
   }
 }
 
@@ -83,20 +89,25 @@ void SDDYAnalyzer::beginJob(){
   edm::Service<TFileService> fs;
   //TH1::SetDefaultSumw2(true);
 
-  hPart1Pt = fs->make<TH1F>("hPart1Pt","hPart1Pt",100,0.,100.);
-  hPart1Eta = fs->make<TH1F>("hPart1Eta","hPart1Eta",100,-5.,5.);
-  hPart1Phi = fs->make<TH1F>("hPart1Phi","hPart1Phi",100,-3.141592,3.141592);
-  hPart2Pt = fs->make<TH1F>("hPart2Pt","hPart2Pt",100,0.,100.);
-  hPart2Eta = fs->make<TH1F>("hPart2Eta","hPart2Eta",100,-5.,5.);
-  hPart2Phi = fs->make<TH1F>("hPart2Phi","hPart2Phi",100,-3.141592,3.141592);
+
+  hPartEta = fs->make<TH1F>("hPartEta","hPartEta",2000,-10.,10.);
+  hPartPt = fs->make<TH1F>("hPartPt","hPartPt",1000,0.,1000.);
+  hPartPhi = fs->make<TH1F>("hPartPhi","hPartPhi",100,-3.141592,3.141592);
+  hPartCMSEta = fs->make<TH1F>("hPartCMSEta","hPartCMSEta",2000,-10.,10.);
+  hPartCMSPt = fs->make<TH1F>("hPartCMSPt","hPartCMSPt",1000,0.,1000.);
+  hPartCMSPhi = fs->make<TH1F>("hPartCMSPhi","hPartCMSPhi",100,-3.141592,3.141592);
+  hEnergyvsEtaCMS = fs->make<TH1F>("hEnergyvsEtaCMS","hEnergyvsEtaCMS",100,-15.0,15.0);
+  hHFMinusEGEN = fs->make<TH1F>("hHFMinusEGEN","hHFMinusGen",1000,0,1000);
+  hHFPlusEGEN = fs->make<TH1F>("hHFMinusEGEN","hHFMinusGen",1000,0,1000);
+  hCastorEGEN = fs->make<TH1F>("hCastorEGEN","hCastorEGen",1000,0,1000);
   hBosonPt = fs->make<TH1F>("hBosonPt","hBosonPt",100,0.,50.);
   hBosonEta = fs->make<TH1F>("hBosonEta","hBosonEta",100,-5.,5.);
   hBosonPhi = fs->make<TH1F>("hBosonPhi","hBosonPhi",100,-3.141592,3.141592);
-  hBosonM = fs->make<TH1F>("hBosonM","hBosonM",100,40.,100.);
-
-  hEnergyvsEta = fs->make<TH1F>("hEnergyvsEta","hEnergyvsEta",100,-15.0,15.0); 		
-  hXiGen = fs->make<TH1F>("hXiGen","hXiGen",100,0.,0.21);
-  hProtonPt2 = fs->make<TH1F>("hProtonPt2","hProtonPt2",100,0.,3.0);
+  hBosonM = fs->make<TH1F>("hBosonM","hBosonM",100,40.,150.);
+  hBosonPtDiff = fs->make<TH1F>("hBosonPtDiff","hBosonPtDiff",100,0.,50.);
+  hBosonEtaDiff = fs->make<TH1F>("hBosonEtaDiff","hBosonEtaDiff",100,-5.,5.);
+  hBosonPhiDiff = fs->make<TH1F>("hBosonPhiDiff","hBosonPhiDiff",100,-3.141592,3.141592);
+  hBosonMDiff = fs->make<TH1F>("hBosonMDiff","hBosonMDiff",100,40.,150.);
 
   nevents = 0;
 }
@@ -106,69 +117,73 @@ void SDDYAnalyzer::endJob(){
 }
 
 void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
-  nevents++; 
 
-  // Generator Information
+  bool debug = false;
+  nevents++;
+
+  // Generator Particles
   edm::Handle<reco::GenParticleCollection> genParticles;
   ev.getByLabel(genParticlesTag_, genParticles);
-  double pz1max = 0.;
-  double pz2min = 0.;
-  reco::GenParticleCollection::const_iterator proton1 = genParticles->end();
-  reco::GenParticleCollection::const_iterator proton2 = genParticles->end();
+
   reco::GenParticleCollection::const_iterator particle1 = genParticles->end();
   reco::GenParticleCollection::const_iterator particle2 = genParticles->end();
+
+  double sumHFMinusGEN = 0.;
+  double sumCastorGEN = 0.;
+  double sumHFPlusGEN = 0.;
+
   for(reco::GenParticleCollection::const_iterator genpart = genParticles->begin(); genpart != genParticles->end(); ++genpart){
-      		//std::cout << ">>>>>>> pid,status,px,py,px,e= "  << genpart->pdgId() << " , " << genpart->status() << " , " << genpart->px() << " , " << genpart->py() << " , " << genpart->pz() << " , " << genpart->energy() << std::endl;	
-		if(genpart->status() != 1) continue;
 
-		hEnergyvsEta->Fill(genpart->eta(),genpart->energy());	
-		
-		double pz = genpart->pz();
-     		if((genpart->pdgId() == 2212)&&(pz > 0.75*Ebeam_)){
-			if(pz > pz1max){proton1 = genpart;pz1max=pz;}
-		} else if((genpart->pdgId() == 2212)&&(pz < -0.75*Ebeam_)){
-     			if(pz < pz2min){proton2 = genpart;pz2min=pz;}
-     		}
+    if (debug) std::cout << ">>>>>>> pid,status,px,py,px,e= "  << genpart->pdgId() << " , " << genpart->status() << " , " << genpart->px() << " , " << genpart->py() << " , " << genpart->pz() << " , " << genpart->energy() << std::endl;
 
-		//Fix add constraint on mother/daughter relation
-		if((particle1 == genParticles->end())&&(abs(genpart->pdgId()) == abs(particle1Id_))) {particle1 = genpart;continue;}
-		if((particle2 == genParticles->end())&&(abs(genpart->pdgId()) == abs(particle2Id_))) {particle2 = genpart;continue;}
+    if(genpart->status() != 1) continue; // check if genparticle survives.
+
+    hPartPt->Fill(genpart->pt());
+    hPartEta->Fill(genpart->eta());
+    hPartPhi->Fill(genpart->phi());
+
+    if (genpart->eta() > 5.2 || genpart->eta() < -6.2){
+      hPartCMSPt->Fill(genpart->pt());
+      hPartCMSEta->Fill(genpart->eta());
+      hPartCMSPhi->Fill(genpart->phi());
+      continue; // CMS acceptance.
+    }
+
+    hEnergyvsEta->Fill(genpart->eta(),genpart->energy());
+
+    if (genpart->eta() <= -5.2 && genpart->eta() >= -6.2) sumCastorGEN += genpart->energy();
+    if (genpart->eta() <= -3 && genpart->eta() >= -5.2) sumHFMinusGEN += genpart->energy();
+    if (genpart->eta() >= 3 && genpart->eta() <= 5.2) sumHFPlusGEN += genpart->energy();
+
+    if((particle1 == genParticles->end())&&(abs(genpart->pdgId()) == abs(particle1Id_))) {particle1 = genpart;continue;}
+    if((particle2 == genParticles->end())&&(abs(genpart->pdgId()) == abs(particle2Id_))) {particle2 = genpart;continue;}
+
   }
 
-  if(proton1 != genParticles->end()){
-		if(debug) std::cout << "Proton 1: " << proton1->pt() << "  " << proton1->eta() << "  " << proton1->phi() << std::endl;
-   		double xigen1 = 1 - proton1->pz()/Ebeam_;
-		hXiGen->Fill(xigen1);
-		hProtonPt2->Fill(proton1->pt()*proton1->pt());
-  }	
+  if (particle1->px() > 10. && particle2->px() > 10.) {
+    if ((particle1->eta() > -2.5 && particle1->eta()<2.5) && (particle2->eta() > -2.5 && particle2->eta()<2.5) ){
+      math::XYZTLorentzVector myboson(particle1->px() + particle2->px(),
+	  particle1->py() + particle2->py(),
+	  particle1->pz() + particle2->pz(),
+	  particle1->energy() + particle2->energy());
 
-  if(proton2 != genParticles->end()){
-		if(debug) std::cout << "Proton 2: " << proton2->pt() << "  " << proton2->eta() << "  " << proton2->phi() << std::endl;	
-   		double xigen2 = 1 + proton2->pz()/Ebeam_;
-        	hXiGen->Fill(xigen2);
-		hProtonPt2->Fill(proton2->pt()*proton2->pt());
-  }
-
-  if((particle1 != genParticles->end())&&(particle2 != genParticles->end())){
-	if(debug) std::cout << ">>> particle 1 pt,eta: " << particle1->pt() << " , " << particle1->eta() << std::endl;
-	hPart1Pt->Fill(particle1->pt());
-	hPart1Eta->Fill(particle1->eta());
-	hPart1Phi->Fill(particle1->phi());
-
-	if(debug) std::cout << ">>> particle 2 pt,eta: " << particle2->pt() << " , " << particle2->eta() << std::endl;
-        hPart2Pt->Fill(particle2->pt());
-        hPart2Eta->Fill(particle2->eta());
-        hPart2Phi->Fill(particle2->phi());
-	
-	math::XYZTLorentzVector myboson(particle1->px() + particle2->px(),
-					particle1->py() + particle2->py(),
-					particle1->pz() + particle2->pz(),
-					particle1->energy() + particle2->energy());
+      if (myboson.M() >= 60 && myboson.M() <= 110){
 	hBosonPt->Fill(myboson.pt());
 	hBosonEta->Fill(myboson.eta());
 	hBosonPhi->Fill(myboson.phi());
 	hBosonM->Fill(myboson.M());
-  }	
-}
+
+      }
+      if ((myboson.M() >= 60 && myboson.M() <= 110) && sumHFMinusGEN == 0. && sumCastorGEN == 0.){
+	hBosonPtDiff->Fill(myboson.pt());
+	hBosonEtaDiff->Fill(myboson.eta());
+	hBosonPhiDiff->Fill(myboson.phi());
+	hBosonMDiff->Fill(myboson.M());
+      }
+
+    }
+  }
+
+}	
 
 DEFINE_FWK_MODULE(SDDYAnalyzer);
