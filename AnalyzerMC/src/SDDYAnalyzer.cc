@@ -15,6 +15,7 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     // Operations
 
     void analyze(const edm::Event & event, const edm::EventSetup& eventSetup);
+    void fillHistos(int index);
 
     //virtual void beginJob(const edm::EventSetup& eventSetup) ;
     virtual void beginJob(); 
@@ -28,30 +29,53 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     int particle2Id_;
 
     // Histograms
+    std::vector<TH1F*> hVectorPartEta;
+    std::vector<TH1F*> hVectorPartPt;
+    std::vector<TH1F*> hVectorPartPhi;
+    std::vector<TH1F*> hVectorCMSEta;
+    std::vector<TH1F*> hVectorCMSPt;
+    std::vector<TH1F*> hVectorCMSPhi;
+    std::vector<TH1F*> hVectorCMSHFMinusE;
+    std::vector<TH1F*> hVectorCMSHFPlusE;
+    std::vector<TH1F*> hVectorCMSCastorE;
+    std::vector<TH1F*> hVectorCMSEnergyvsEta;
+    std::vector<TH1F*> hVectorCMSBosonPt;
+    std::vector<TH1F*> hVectorCMSBosonEta;
+    std::vector<TH1F*> hVectorCMSBosonPhi;
+    std::vector<TH1F*> hVectorCMSBosonM;
+    
+    
     TH1F* hPartEta;
     TH1F* hPartPt;
     TH1F* hPartPhi;
-    TH1F* hPartCMSEta;
-    TH1F* hPartCMSPt;
-    TH1F* hPartCMSPhi;
-    TH1F* hHFMinusEGEN;
-    TH1F* hHFPlusEGEN;
-    TH1F* hCastorEGEN;
-    TH1F* hEnergyvsEtaCMS;
-    TH1F* hBosonPt;
-    TH1F* hBosonEta;
-    TH1F* hBosonPhi;
-    TH1F* hBosonM;
-    TH1F* hBosonPtDiff;
-    TH1F* hBosonEtaDiff;
-    TH1F* hBosonPhiDiff;
-    TH1F* hBosonMDiff;
+    TH1F* hCMSEta;
+    TH1F* hCMSPt;
+    TH1F* hCMSPhi;
+    TH1F* hCMSHFMinusE;
+    TH1F* hCMSHFPlusE;
+    TH1F* hCMSCastorE;
+    TH1F* hCMSEnergyvsEta;
+    TH1F* hCMSBosonPt;
+    TH1F* hCMSBosonEta;
+    TH1F* hCMSBosonPhi;
+    TH1F* hCMSBosonM;  
     TH1F* hEntriesCut;
 
+    // Counters
     int nevents;
     int zboson;
     int zbosondiff;
-    bool debug;
+    int index;
+    
+    // Histogram variables
+    double sumHFMinusGEN;
+    double sumCastorGEN;
+    double sumHFPlusGEN;
+    double px_gen;
+    double py_gen;
+    double pz_gen;
+    double energy_gen;
+    std::vector <std::string> Folders;
 
 };
 
@@ -89,10 +113,36 @@ SDDYAnalyzer::~SDDYAnalyzer(){
 }
 
 void SDDYAnalyzer::beginJob(){
+	
+  // Counters Start
+  nevents = 0;
+  zboson = 0;
+  zbosondiff = 0;
+	
   edm::Service<TFileService> fs;
-  //TH1::SetDefaultSumw2(true);
+  TH1::SetDefaultSumw2(true);
 
+  std::string step0 = "without_cuts";
+  std::string step1 = "CMS";
+  std::string step2 = "CMS_step1";
+  std::string step3 = "CMS_step2";
+  std::string step4 = "CMS_step3";
 
+  Folders.push_back(step0);
+  Folders.push_back(step1);
+  Folders.push_back(step2);
+  Folders.push_back(step3);
+  Folders.push_back(step4);
+
+  for (std::vector<std::string>::size_type j=0; j<Folders.size(); j++){
+
+    char hPartEtaN[300];
+    sprintf(hPartEtaN,"hPartEta_%s",Folders.at(j).c_str());
+    hPartEta = fs->make<TH1F>(hPartEtaN,"Title...",2000,-10.,10.);
+    hVectorPartEta.push_back(hPartEta);
+
+/*
+  //Booking Histograms
   hPartEta = fs->make<TH1F>("hPartEta","hPartEta",2000,-10.,10.);
   hPartPt = fs->make<TH1F>("hPartPt","hPartPt",100,0.,100.);
   hPartPhi = fs->make<TH1F>("hPartPhi","hPartPhi",50,-3.141592,3.141592);
@@ -112,25 +162,41 @@ void SDDYAnalyzer::beginJob(){
   hBosonPhiDiff = fs->make<TH1F>("hBosonPhiDiff","hBosonPhiDiff",50,-3.141592,3.141592);
   hBosonMDiff = fs->make<TH1F>("hBosonMDiff","hBosonMDiff",100,40.,150.);
   hEntriesCut = fs->make<TH1F>("hEntriesCut","hEntriesCut",10,0.,10.);
-
-  nevents = 0;
-  zboson = 0;
-  zbosondiff = 0;
+  hEnergyvsEtaCMS->Scale(1/(float)nevents);
+  */
 
 }
 
 void SDDYAnalyzer::endJob(){
-  hEnergyvsEtaCMS->Scale(1/(float)nevents);	
+
+  //Counters	
   hEntriesCut->SetBinContent(2,nevents);
   hEntriesCut->SetBinContent(4,zboson);
   hEntriesCut->SetBinContent(6,zbosondiff);
+  
+}
+
+void SDDYAnalyzer::fillHistos(int index){
+	
+	hVectorPartEta.at(index)->Fill(10);
+	
+	
 }
 
 void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
+  //switches
   bool debug = false;
   bool lepton1 = false;
   bool lepton2 = false;
+  
+ sumHFMinusGEN = 0.;
+ sumCastorGEN = 0.;
+ sumHFPlusGEN = 0.;
+ px_gen = 0.;
+ py_gen = 0.;
+ pz_gen = 0.;
+ energy_gen = 0;;
   nevents++;
 
   // Generator Particles
@@ -139,16 +205,28 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
   reco::GenParticleCollection::const_iterator particle1 = genParticles->end();
   reco::GenParticleCollection::const_iterator particle2 = genParticles->end();
+  
+  reco::GenParticleCollection::const_iterator proton1 = genParticles->end();
+  reco::GenParticleCollection::const_iterator proton2 = genParticles->end();
 
-  double sumHFMinusGEN = 0.;
-  double sumCastorGEN = 0.;
-  double sumHFPlusGEN = 0.;
+
 
   for(reco::GenParticleCollection::const_iterator genpart = genParticles->begin(); genpart != genParticles->end(); ++genpart){
 
     if (debug) std::cout << ">>>>>>> pid,status,px,py,px,e= "  << genpart->pdgId() << " , " << genpart->status() << " , " << genpart->px() << " , " << genpart->py() << " , " << genpart->pz() << " , " << genpart->energy() << std::endl;
 
     if(genpart->status() != 1) continue; // check if genparticle survives.
+
+    energy_gen = genpart->energy();
+    px_gen = genpart->px();
+    py_gen = genpart->py();
+    pz_gen = genpart->pz();
+    
+    fillHistos(0);
+    fillHistos(1);
+    fillHistos(2);
+    fillHistos(3);
+    fillHistos(4);
 
     hPartPt->Fill(genpart->pt());
     hPartEta->Fill(genpart->eta());
