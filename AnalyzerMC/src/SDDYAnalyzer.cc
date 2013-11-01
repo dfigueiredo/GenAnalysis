@@ -140,7 +140,8 @@ void SDDYAnalyzer::beginJob(){
     sprintf(hPartEtaN,"hPartEta_%s",Folders.at(j).c_str());
     hPartEta = fs->make<TH1F>(hPartEtaN,"Title...",2000,-10.,10.);
     hVectorPartEta.push_back(hPartEta);
-
+    d
+  }
 /*
   //Booking Histograms
   hPartEta = fs->make<TH1F>("hPartEta","hPartEta",2000,-10.,10.);
@@ -186,9 +187,9 @@ void SDDYAnalyzer::fillHistos(int index){
 void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
   //switches
-  bool debug = false;
   bool lepton1 = false;
   bool lepton2 = false;
+  debug printout = false;
   
  sumHFMinusGEN = 0.;
  sumCastorGEN = 0.;
@@ -213,7 +214,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
   for(reco::GenParticleCollection::const_iterator genpart = genParticles->begin(); genpart != genParticles->end(); ++genpart){
 
-    if (debug) std::cout << ">>>>>>> pid,status,px,py,px,e= "  << genpart->pdgId() << " , " << genpart->status() << " , " << genpart->px() << " , " << genpart->py() << " , " << genpart->pz() << " , " << genpart->energy() << std::endl;
+    if (printout) std::cout << ">>>>>>> pid,status,px,py,px,e= "  << genpart->pdgId() << " , " << genpart->status() << " , " << genpart->px() << " , " << genpart->py() << " , " << genpart->pz() << " , " << genpart->energy() << std::endl;
 
     if(genpart->status() != 1) continue; // check if genparticle survives.
 
