@@ -46,8 +46,11 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     TH1F* hBosonEtaDiff;
     TH1F* hBosonPhiDiff;
     TH1F* hBosonMDiff;
+    TH1F* hEntriesCut;
 
     int nevents;
+    int zboson;
+    int zbosondiff;
     bool debug;
 
 };
@@ -108,12 +111,19 @@ void SDDYAnalyzer::beginJob(){
   hBosonEtaDiff = fs->make<TH1F>("hBosonEtaDiff","hBosonEtaDiff",100,-5.,5.);
   hBosonPhiDiff = fs->make<TH1F>("hBosonPhiDiff","hBosonPhiDiff",50,-3.141592,3.141592);
   hBosonMDiff = fs->make<TH1F>("hBosonMDiff","hBosonMDiff",100,40.,150.);
+  hEntriesCut = fs->make<TH1F>("hEntriesCut","hEntriesCut",10,0.,10.);
 
   nevents = 0;
+  zboson = 0;
+  zbosondiff = 0;
+
 }
 
 void SDDYAnalyzer::endJob(){
   hEnergyvsEtaCMS->Scale(1/(float)nevents);	
+  hEntriesCut->SetBinContent(2,nevents);
+  hEntriesCut->SetBinContent(4,zboson);
+  hEntriesCut->SetBinContent(6,zbosondiff);
 }
 
 void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
@@ -173,6 +183,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 	    particle1->energy() + particle2->energy());
 
 	if (myboson.M() >= 60 && myboson.M() <= 110){
+          zboson++;
 	  hBosonPt->Fill(myboson.pt());
 	  hBosonEta->Fill(myboson.eta());
 	  hBosonPhi->Fill(myboson.phi());
@@ -183,6 +194,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 	}
 
 	if ((myboson.M() >= 60 && myboson.M() <= 110) && sumHFMinusGEN == 0. && sumCastorGEN == 0.){
+          zbosondiff++;
 	  hBosonPtDiff->Fill(myboson.pt());
 	  hBosonEtaDiff->Fill(myboson.eta());
 	  hBosonPhiDiff->Fill(myboson.phi());
