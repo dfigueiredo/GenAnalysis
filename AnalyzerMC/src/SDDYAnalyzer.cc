@@ -56,14 +56,14 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     std::vector<TH1F*> hVectorPartEnergyVsEta;
     std::vector<TH1F*> hVectorPartPDGId;
 
-    std::vector<TH1F*> hVectorDiLeptonVertexD;
+    std::vector<TH1F*> hVectorDileptonVertexD;
     std::vector<TH1F*> hVectorHFPlusE;
     std::vector<TH1F*> hVectorHFMinusE;
     std::vector<TH1F*> hVectorCastorE;
     std::vector<TH1F*> hVectorDileptonEta;
     std::vector<TH1F*> hVectorDileptonPhi;
     std::vector<TH1F*> hVectorDileptonPt;
-    std::vector<TH1F*> hVectorDiLeptonM;
+    std::vector<TH1F*> hVectorDileptonM;
 
     TH1F* hPartEta;
     TH1F* hPartPt;
@@ -79,14 +79,14 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     TH1F* hPartEnergy;
     TH1F* hPartEnergyVsEta;
 
-    TH1F* hDiLeptonVertexD;
+    TH1F* hDileptonVertexD;
     TH1F* hHFPlusE;
     TH1F* hHFMinusE;
     TH1F* hCastorE;
     TH1F* hDileptonEta;
     TH1F* hDileptonPhi;
     TH1F* hDileptonPt;
-    TH1F* hDiLeptonM;
+    TH1F* hDileptonM;
 
     TH1F* hEntries;
 
@@ -148,6 +148,10 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     double genEMinusPz;
     double t_plus;
     double t_minus;
+    double dibosonEta;
+    double dibosonPhi;
+    double dibosonPt;
+    double dibosonM;
 
     bool lepton1;
     bool lepton2;
@@ -211,8 +215,7 @@ void SDDYAnalyzer::beginJob(){
   TH1::SetDefaultSumw2(true);
 
   std::string step0 = "without_cuts_AllParticles";
-  std::string step1 = "CMS_AllParticles";
-
+  std::string step1 = "dileptons";
 
   Group1.push_back(step0);
   Group1.push_back(step1);
@@ -286,53 +289,48 @@ void SDDYAnalyzer::beginJob(){
     hPartPDGId = fs->make<TH1F>(hPartPDGIdN,"Title...",20,0,500.);
     hVectorPartPDGId.push_back(hPartPDGId);
 
+    char hDileptonVertexDN[300];
+    sprintf(hDileptonVertexDN,"hDileptonVertexD_%s",Group1.at(j).c_str());
+    hDileptonVertexD = fs->make<TH1F>(hDileptonVertexDN,"Title...",20,0,500.);
+    hVectorDileptonVertexD.push_back(hDileptonVertexD);
+
+    char hHFPlusEN[300];
+    sprintf(hHFPlusEN,"hHFPlusE_%s",Group1.at(j).c_str());
+    hHFPlusE = fs->make<TH1F>(hHFPlusEN,"Title...",20,0,500.);
+    hVectorHFPlusE.push_back(hHFPlusE);
+
+    char hHFMinusEN[300];
+    sprintf(hHFMinusEN,"hHFMinusE_%s",Group1.at(j).c_str());
+    hHFMinusE = fs->make<TH1F>(hHFMinusEN,"Title...",20,0,500.);
+    hVectorHFMinusE.push_back(hHFMinusE);
+
+    char hCastorEN[300];
+    sprintf(hCastorEN,"hCastorE_%s",Group1.at(j).c_str());
+    hCastorE = fs->make<TH1F>(hCastorEN,"Title...",20,0,500.);
+    hVectorCastorE.push_back(hCastorE);
+
+    char hDileptonEtaN[300];
+    sprintf(hDileptonEtaN,"hDileptonEta_%s",Group1.at(j).c_str());
+    hDileptonEta = fs->make<TH1F>(hDileptonEtaN,"Title...",20,0,500.);
+    hVectorDileptonEta.push_back(hDileptonEta);
+
+    char hDileptonPhiN[300];
+    sprintf(hDileptonPhiN,"hDileptonPhi_%s",Group1.at(j).c_str());
+    hDileptonPhi = fs->make<TH1F>(hDileptonPhiN,"Title...",20,0,500.);
+    hVectorDileptonPhi.push_back(hDileptonPhi);
+
+    char hDileptonPtN[300];
+    sprintf(hDileptonPtN,"hDileptonPt_%s",Group1.at(j).c_str());
+    hDileptonPt = fs->make<TH1F>(hDileptonPtN,"Title...",20,0,500.);
+    hVectorDileptonPt.push_back(hDileptonPt);
+
+    char hDileptonMN[300];
+    sprintf(hDileptonMN,"hDileptonM_%s",Group1.at(j).c_str());
+    hDileptonM = fs->make<TH1F>(hDileptonMN,"Title...",20,0,500.);
+    hVectorDileptonM.push_back(hDileptonM);
+
   }
 
-  /*
-     for (std::vector<std::string>::size_type j=0; j<Group2.size(); j++){
-
-     char hDiLeptonVertexDN[300];
-     sprintf(hDiLeptonVertexDN,"hDiLeptonVertexD_%s",Group2.at(j).c_str());
-     hDiLeptonVertexD = fs->make<TH1F>(hDiLeptonVertexDN,"Title...",20,0,500.);
-     hVectorDiLeptonVertexD.push_back(hDiLeptonVertexD);
-
-     char hHFPlusEN[300];
-     sprintf(hHFPlusEN,"hHFPlusE_%s",Group2.at(j).c_str());
-     hHFPlusE = fs->make<TH1F>(hHFPlusE,"Title...",20,0,500.);
-     hVectorHFPlusE.push_back(hHFPlusE);
-
-     char hHFMinusEN[300];
-     sprintf(hHFMinusEN,"hHFMinusE_%s",Group2.at(j).c_str());
-     hHFMinusE = fs->make<TH1F>(hHFMinusE,"Title...",20,0,500.);
-     hVectorHFMinusE.push_back(hHFMinusE);
-
-     char hCastorEN[300];
-     sprintf(hCastorEN,"hCastorE_%s",Group2.at(j).c_str());
-     hCastorE = fs->make<TH1F>(hCastorE,"Title...",20,0,500.);
-     hVectorCastorE.push_back(hCastorE);
-
-     char hDileptonEtaN[300];
-     sprintf(hDileptonEtaN,"hDiLeptonEta_%s",Group2.at(j).c_str());
-     hDiLeptonEta = fs->make<TH1F>(hDiLeptonEta,"Title...",20,0,500.);
-     hVectorDiLeptonEta.push_back(hDiLeptonEta);
-
-     char hDileptonPhiN[300];
-     sprintf(hDileptonPhiN,"hDiLeptonPhi_%s",Group2.at(j).c_str());
-     hDiLeptonPhi = fs->make<TH1F>(hDiLeptonPhi,"Title...",20,0,500.);
-     hVectorDiLeptonPhi.push_back(hDiLeptonPhi);
-
-     char hDileptonPtN[300];
-     sprintf(hDileptonPtN,"hDiLeptonPt_%s",Group2.at(j).c_str());
-     hDiLeptonPt = fs->make<TH1F>(hDiLeptonPt,"Title...",20,0,500.);
-     hVectorDiLeptonPt.push_back(hDiLeptonPt);
-
-     char hDileptonMN[300];
-     sprintf(hDileptonMN,"hDiLeptonM_%s",Group2.at(j).c_str());
-     hDiLeptonM = fs->make<TH1F>(hDiLeptonM,"Title...",20,0,500.);
-     hVectorDiLeptonM.push_back(hDiLeptonM);
-
-     }
-   */
 
 }
 
@@ -340,10 +338,10 @@ void SDDYAnalyzer::endJob(){
 
   //Counters	
   /*
-  hEntries->SetBinContent(2,nevents);
-  hEntries->SetBinContent(4,zboson_counter);
-  hEntries->SetBinContent(6,zbosondiff_counter);
-  */
+     hEntries->SetBinContent(2,nevents);
+     hEntries->SetBinContent(4,zboson_counter);
+     hEntries->SetBinContent(6,zbosondiff_counter);
+   */
 
 }
 
@@ -366,6 +364,17 @@ void SDDYAnalyzer::fillHistos(int index){
     hVectorPartEnergyVsEta.at(index)->Fill(etaAll.at(j),energy_genAll.at(j));
     hVectorPartPDGId.at(index)->Fill(pdgIdAll.at(j));
   }
+
+
+  hVectorDileptonVertexD.at(index)->Fill(vertex_d);
+  hVectorHFPlusE.at(index)->Fill(sumHFPlusGEN);
+  hVectorHFMinusE.at(index)->Fill(sumHFMinusGEN);
+  hVectorCastorE.at(index)->Fill(sumCastorGEN);
+  hVectorDileptonEta.at(index)->Fill(dibosonEta);
+  hVectorDileptonPhi.at(index)->Fill(dibosonPhi);
+  hVectorDileptonPt.at(index)->Fill(dibosonPt);
+  hVectorDileptonM.at(index)->Fill(dibosonM);
+
 
 }
 
@@ -418,6 +427,10 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   proton_py_minus = 0.;
   proton_pz_minus = 0.;
   proton_pf_minus = 0.;
+  dibosonEta = 0.;
+  dibosonPhi = 0.;
+  dibosonPt = 0.;
+  dibosonM = 0.;
   t_plus = 0.;
   t_minus = 0.;
   pz_cut = 0.7*Ebeam_;
@@ -472,22 +485,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
     if (debug) std::cout << ">>>>>>> pid,status,px,py,px,e= "  << genpart->pdgId() << " , " << genpart->status() << " , " << genpart->px() << " , " << genpart->py() << " , " << genpart->pz() << " , " << genpart->energy() << std::endl;
 
     if(genpart->status() != 1) continue; // only final state particles.
-    if(cmsAccept && genpart->eta() >=5.2 && genpart->eta() <= -6.2) continue; // CMS Acceptance
-
-    pf_gen = sqrt(genpart->px()*genpart->px()+genpart->py()*genpart->py()+genpart->pz()*genpart->pz());
-
-    energy_genAll.push_back(genpart->energy());
-    px_genAll.push_back(genpart->px());
-    py_genAll.push_back(genpart->py());
-    pz_genAll.push_back(genpart->pz());
-    etaAll.push_back(genpart->eta());
-    phiAll.push_back(genpart->phi());
-    ptAll.push_back(genpart->pt());
-    vxAll.push_back(genpart->vx());
-    vyAll.push_back(genpart->vy());
-    vzAll.push_back(genpart->vz());
-    pf_genAll.push_back(pf_gen);
-    pdgIdAll.push_back(genpart->pdgId());
+    if(cmsAccept && (genpart->eta() >=5.2 || genpart->eta() <= -6.2)) continue; // CMS Acceptance
 
     // identifying leptons
     if((particle1 == genParticles->end())&&(abs(genpart->pdgId()) == abs(particle1Id_))) {particle1 = genpart;lepton1=true;continue;}
@@ -495,9 +493,10 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
     // identifying protons
     if((genpart->pdgId() == 2212)){
-        counter_total_proton++;
-      if(genpart->pz() > 0.){
-        counter_proton1++;
+      counter_total_proton++;
+      if (debug) std::cout << "All Protons:  pT = " << genpart->pt() << " | eta = " << genpart->eta() << " | phi = " << genpart->phi() << " | pdgId = "<< genpart->pdgId() << " | Vertex Rho: " << genpart->vertex().Rho() << " | Vertex Z = " << genpart->vertex().Z() << " | Vertex P("<< genpart->vx() << "," << genpart->vy() << "," <<  genpart->vz() << ") mm" <<  std::endl;
+      if(genpart->pz() > pz_cut){
+	counter_proton1++;
 	proton1 = genpart;
 	proton_energy_plus = genpart->energy();
 	proton_px_plus = genpart->px(); 
@@ -505,10 +504,11 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 	proton_pz_plus = genpart->pz();
 	proton_pf_plus = sqrt(genpart->px()*genpart->px()+genpart->py()*genpart->py()+genpart->pz()*genpart->pz());
 	protonplus=true;
+	if (debug) std::cout << "Proton Plus: pT = " << genpart->pt() << " | eta = " << genpart->eta() << " | phi = " << genpart->phi() << " | pdgId = "<< genpart->pdgId() << " | Vertex Rho: " << genpart->vertex().Rho() << " | Vertex Z = " << genpart->vertex().Z() << " | Vertex P("<< genpart->vx() << "," << genpart->vy() << "," <<  genpart->vz() << ") mm" << std::endl;
       }
     } else if((genpart->pdgId() == 2212)){ 
-      if(genpart->pz() < 0.){
-        counter_proton2++;
+      if(genpart->pz() < -pz_cut){
+	counter_proton2++;
 	proton2 = genpart;
 	proton_energy_minus = genpart->energy();
 	proton_px_minus = genpart->px();
@@ -516,17 +516,35 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 	proton_pz_minus = genpart->pz();
 	proton_pf_minus = sqrt(genpart->px()*genpart->px()+genpart->py()*genpart->py()+genpart->pz()*genpart->pz());
 	protonminus = true;
+	if (debug) std::cout << "Proton Minus: pT = " << genpart->pt() << " | eta = " << genpart->eta() << " | phi = " << genpart->phi() << " | pdgId = "<< genpart->pdgId() << " | Vertex Rho: " << genpart->vertex().Rho() << " | Vertex Z = " << genpart->vertex().Z() << " | Vertex P("<< genpart->vx() << "," << genpart->vy() << "," <<  genpart->vz() << ") mm" << std::endl;
       }
     }
 
-    if (fabs(genpart->pz()) < pz_cut){
+    if (fabs(genpart->pz()) < pz_cut && genpart->pdgId() != 2212){
+
+      if (genpart->eta() <= -5.2 && genpart->eta() >= -6.2) sumCastorGEN += genpart->energy();
+      if (genpart->eta() <= -3 && genpart->eta() >= -5.2) sumHFMinusGEN += genpart->energy();
+      if (genpart->eta() >= 3 && genpart->eta() <= 5.2) sumHFPlusGEN += genpart->energy();
+
+      pf_gen = sqrt(genpart->px()*genpart->px()+genpart->py()*genpart->py()+genpart->pz()*genpart->pz());
+
+      energy_genAll.push_back(genpart->energy());
+      px_genAll.push_back(genpart->px());
+      py_genAll.push_back(genpart->py());
+      pz_genAll.push_back(genpart->pz());
+      etaAll.push_back(genpart->eta());
+      phiAll.push_back(genpart->phi());
+      ptAll.push_back(genpart->pt());
+      vxAll.push_back(genpart->vx());
+      vyAll.push_back(genpart->vy());
+      vzAll.push_back(genpart->vz());
+      pf_genAll.push_back(pf_gen);
+      pdgIdAll.push_back(genpart->pdgId());
+
       genEPlusPz += (genpart->energy() + genpart->pz());
       genEMinusPz += (genpart->energy() - genpart->pz());         
-    }
 
-    if (genpart->eta() <= -5.2 && genpart->eta() >= -6.2) sumCastorGEN += genpart->energy();
-    if (genpart->eta() <= -3 && genpart->eta() >= -5.2) sumHFMinusGEN += genpart->energy();
-    if (genpart->eta() >= 3 && genpart->eta() <= 5.2) sumHFPlusGEN += genpart->energy();
+    }
 
   }
 
@@ -534,7 +552,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
   if(protonplus){
     if(debug) std::cout << "Proton 1: " << proton1->pt() << " " << proton1->eta() << " " << proton1->phi() << std::endl;
-    if(proton_pz_plus > 0.){
+    if(proton_pz_plus > pz_cut){
       xiProtonPlus = ( 1 - (proton_pz_plus/Ebeam_) );
       math::XYZTLorentzVector p2(0,0,Ebeam_,Ebeam_);
       math::XYZTLorentzVector p3(proton_px_plus,proton_py_plus,proton_pz_plus,proton_energy_plus); // 4 momentum of p3
@@ -545,7 +563,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
   if(protonminus){
     if(debug) std::cout << "Proton 2: " << proton2->pt() << " " << proton2->eta() << " " << proton2->phi() << std::endl;        
-    if(proton_pz_minus < 0.){
+    if(proton_pz_minus < -pz_cut){
       xiProtonMinus = (proton_pz_minus < 0.) ? ( 1 + (proton_pz_minus/Ebeam_) ) : -1.;
       math::XYZTLorentzVector p1(0,0,-Ebeam_,Ebeam_);
       math::XYZTLorentzVector pm(proton_px_minus,proton_py_minus,proton_pz_minus,proton_energy_minus); // 4 momentum of p3
@@ -559,10 +577,18 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   if (protonplus && protonminus) double_gap = true;
 
   if(dilepton){
+    vertex_d = sqrt( (particle2->px()-particle1->px())*(particle2->px()-particle1->px()) + (particle2->py()-particle1->py())*(particle2->py()-particle1->py()) + (particle2->pz()-particle1->pz())*(particle2->pz()-particle1->pz()));
+
     math::XYZTLorentzVector myboson(particle1->px() + particle2->px(),
 	particle1->py() + particle2->py(),
 	particle1->pz() + particle2->pz(),
 	particle1->energy() + particle2->energy());
+
+    dibosonEta = myboson.eta();
+    dibosonPhi = myboson.phi();
+    dibosonPt = myboson.pt();
+    dibosonM = myboson.M();
+
     if(particle1->pt() > 10. && particle2->pt() > 10.) ptcut = true;
     if((particle1->eta() > -2.5 && particle1->eta()< 2.5) && (particle2->eta() > -2.5 && particle2->eta()< 2.5) ) leptonAccept = true;
     if(myboson.M() >= 60 && myboson.M() <= 110) {
@@ -574,11 +600,15 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
       HF_CASTOR_gap = true;
     }
 
+    SDDYAnalyzer::fillHistos(1);
+
   } 
 
-  std::cout << "Counter Total Proton: " << counter_total_proton << std::endl;
-  std::cout << "Counter Proton 1: " << counter_proton1 << std::endl;
-  std::cout << "Counter Proton 2: " << counter_proton2 << std::endl;
+  if (debug) {
+    std::cout << "Counter Total Proton: " << counter_total_proton << std::endl;
+    std::cout << "Counter Proton 1: " << counter_proton1 << std::endl;
+    std::cout << "Counter Proton 2: " << counter_proton2 << std::endl;
+  }
 
 }	
 
