@@ -433,7 +433,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   dibosonM = 0.;
   t_plus = 0.;
   t_minus = 0.;
-  pz_cut = 0.7*Ebeam_;
+  pz_cut = 0.01*Ebeam_;
   genEPlusPz = 0.;
   genEMinusPz = 0.;
   energy_genAll.clear();
@@ -520,6 +520,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
       }
     }
 
+    // Other particles, not proton
     if (fabs(genpart->pz()) < pz_cut && genpart->pdgId() != 2212){
 
       if (genpart->eta() <= -5.2 && genpart->eta() >= -6.2) sumCastorGEN += genpart->energy();
@@ -551,24 +552,26 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   SDDYAnalyzer::fillHistos(0);
 
   if(protonplus){
-    if(debug) std::cout << "Proton 1: " << proton1->pt() << " " << proton1->eta() << " " << proton1->phi() << std::endl;
+    std::cout << "Proton 1: " << proton1->pt() << " " << proton1->eta() << " " << proton1->phi() << std::endl;
     if(proton_pz_plus > pz_cut){
-      xiProtonPlus = ( 1 - (proton_pz_plus/Ebeam_) );
+      xiProtonPlus = ( 1 - (proton1->pz()/Ebeam_) );
       math::XYZTLorentzVector p2(0,0,Ebeam_,Ebeam_);
-      math::XYZTLorentzVector p3(proton_px_plus,proton_py_plus,proton_pz_plus,proton_energy_plus); // 4 momentum of p3
+      math::XYZTLorentzVector p3(proton1->px(),proton1->py(),proton1->pz(),proton1->energy()); // 4 momentum of p3
       math::XYZTLorentzVector vec_t = (p3 - p2);
       t_plus=vec_t.M2();
+      std::cout << "t p-plus: " << t_plus << std::endl;
     }
   }        
 
   if(protonminus){
-    if(debug) std::cout << "Proton 2: " << proton2->pt() << " " << proton2->eta() << " " << proton2->phi() << std::endl;        
+    std::cout << "Proton 2: " << proton2->pt() << " " << proton2->eta() << " " << proton2->phi() << std::endl;        
     if(proton_pz_minus < -pz_cut){
       xiProtonMinus = (proton_pz_minus < 0.) ? ( 1 + (proton_pz_minus/Ebeam_) ) : -1.;
       math::XYZTLorentzVector p1(0,0,-Ebeam_,Ebeam_);
-      math::XYZTLorentzVector pm(proton_px_minus,proton_py_minus,proton_pz_minus,proton_energy_minus); // 4 momentum of p3
+      math::XYZTLorentzVector pm(proton2->px(),proton2->py(),proton2->pz(),proton2->energy()); // 4 momentum of p3
       math::XYZTLorentzVector vec_t = (pm - p1);
       t_minus=vec_t.M2();
+      std::cout << "t p-minus: " << t_minus << std::endl;
     }
   }
 
