@@ -98,7 +98,7 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     double deltaeta, deltaphi, deltapt, vertex_d;
     double genEPlusPz, genEMinusPz;
     double xi, xi_minus, xi_plus, xiZ_plus, xiZ_minus, xiZ;
-    double xi_diff_plus; xi_diff_minus;
+    double xi_diff_plus, xi_diff_minus;
     double l1eta, l1phi, l1pt, l1energy;
     double l2eta, l2phi, l2pt, l2energy;
     double l1px, l1py, l1pz, l1pf;
@@ -114,6 +114,15 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     double dibosonEta, dibosonPhi, dibosonPt, dibosonM;
     double t_plus, t_minus;
     double pz_cut;
+    double pf_gen;
+
+    bool lepton1, lepton2, dilepton, leptonAcceptance;
+    bool single_gap, double_gap;
+    bool zboson, zboson_diff;
+    bool HF_CASTOR_gap;
+    bool protonplus;
+    bool protonminus;
+    bool ptcut;
 
     std::vector <std::string> Group1;
 
@@ -153,11 +162,6 @@ SDDYAnalyzer::~SDDYAnalyzer(){
 }
 
 void SDDYAnalyzer::beginJob(){
-
-  // Counters Start
-  nevents = 0;
-  zboson_counter = 0;
-  zbosondiff_counter = 0;
 
   edm::Service<TFileService> fs;
   TH1::SetDefaultSumw2(true);
@@ -338,25 +342,25 @@ void SDDYAnalyzer::fillHistos(int index){
 
 void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
-  sumHFMinusGEN, sumCastorGEN, sumHFPlusGEN = 0.;
-  deltaeta, deltaphi, deltapt, vertex_d = 0.;
-  genEPlusPz, genEMinusPz = 0.;
-  xi, xi_minus, xi_plus, xiZ_plus, xiZ_minus, xiZ = -999.;
-  xi_diff_plus; xi_diff_minus = -999.;
-  l1eta, l1phi, l1pt, l1energy = 0.;
-  l2eta, l2phi, l2pt, l2energy = 0.;
-  l1px, l1py, l1pz, l1pf =0.;
-  l2px, l2py, l2pz, l2pf = 0.;
-  l1vx,  l1vy, l1vz = 0.;
-  l2vx, l2vy, l2vz = 0.;
+  sumHFMinusGEN = 0.; sumCastorGEN = 0.; sumHFPlusGEN = 0.;
+  deltaeta = 0.; deltaphi = 0.; deltapt = 0.; vertex_d = 0.;
+  genEPlusPz = 0.; genEMinusPz = 0.;
+  xi = -999.; xi_minus = -999.; xi_plus = -999.; xiZ_plus = -999.; xiZ_minus = -999.; xiZ = -999.;
+  xi_diff_plus = -999.; xi_diff_minus = -999.;
+  l1eta = 0.; l1phi = 0.; l1pt = 0.; l1energy = 0.;
+  l2eta = 0.; l2phi = 0.; l2pt = 0.; l2energy = 0.;
+  l1px = 0.; l1py = 0.; l1pz = 0.; l1pf = 0.;
+  l2px = 0.; l2py = 0.; l2pz = 0.; l2pf = 0.;
+  l1vx = 0.; l1vy = 0.; l1vz = 0.;
+  l2vx = 0.; l2vy = 0.; l2vz = 0.;
   xiProtonPlus = -999.;
   xiProtonMinus = -999.;
-  proton_eta_plus, proton_phi_plus, proton_pt_plus, proton_energy_plus = 0.;
-  proton_px_plus, proton_py_plus, proton_pz_plus, proton_pf_plus = 0.;
-  proton_eta_minus, proton_phi_minus, proton_pt_minus, proton_energy_minus = 0.;
-  proton_px_minus, proton_py_minus, proton_pz_minus, proton_pf_minus = 0.;
-  dibosonEta, dibosonPhi, dibosonPt, dibosonM = 0.;
-  t_plus, t_minus = -999.;
+  proton_eta_plus = 0.; proton_phi_plus = 0.; proton_pt_plus = 0.; proton_energy_plus = 0.;
+  proton_px_plus = 0.; proton_py_plus = 0.; proton_pz_plus = 0.; proton_pf_plus = 0.;
+  proton_eta_minus = 0.; proton_phi_minus = 0.; proton_pt_minus = 0.; proton_energy_minus = 0.;
+  proton_px_minus = 0.; proton_py_minus = 0.; proton_pz_minus = 0.; proton_pf_minus = 0.;
+  dibosonEta = 0.; dibosonPhi = 0.; dibosonPt = 0.; dibosonM = 0.;
+  t_plus = 0.; t_minus = -999.;
   pz_cut = 0.75*Ebeam_;
 
   energy_genAll.clear();
@@ -373,9 +377,9 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   pt_genAll.clear();
   pdgIdAll.clear();
 
-  lepton1, lepton2, dilepton = false;
-  single_gap, double_gap = false;
-  zboson, zboson_diff = false;
+  lepton1 = false; lepton2 = false; dilepton = false, leptonAcceptance = false;
+  single_gap = false; double_gap = false;
+  zboson = false; zboson_diff = false;
   HF_CASTOR_gap = false;
   protonplus = false;
   protonminus = false;
@@ -500,7 +504,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   if (protonplus && protonminus) double_gap = true;
 
   // Xi all particles
-  xi_minus = genEMinuzPz/(2*Ebeam_); 
+  xi_minus = genEMinusPz/(2*Ebeam_); 
   xi_plus = genEPlusPz/(2*Ebeam_);
   xi = xi_minus+xi_plus;
 
@@ -545,7 +549,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   if(particle1->pt() > 10. && particle2->pt() > 10.) ptcut = true;
 
   // Eta Acceptance CMS
-  if((particle1->eta() > -2.5 && particle1->eta()< 2.5) && (particle2->eta() > -2.5 && particle2->eta()< 2.5) ) leptonAccept = true; 
+  if((particle1->eta() > -2.5 && particle1->eta()< 2.5) && (particle2->eta() > -2.5 && particle2->eta()< 2.5) ) leptonAcceptance = true; 
 
   // Negative very restricted GAP?
   if(sumHFMinusGEN == 0. && sumCastorGEN == 0.) {
@@ -567,7 +571,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   if (dilepton && leptonAcceptance && ptcut && zboson && sumCastorGEN==0) SDDYAnalyzer::fillHistos(4);
 
   // CMS Boson Z very restricted gap cut
-  if (dilepton && leptonAcceptance && ptcut && zboson && HF_CASTOR_GAP) SDDYAnalyzer::fillHistos(5);
+  if (dilepton && leptonAcceptance && ptcut && zboson && HF_CASTOR_gap) SDDYAnalyzer::fillHistos(5);
 
 }	
 
