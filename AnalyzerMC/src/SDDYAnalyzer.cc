@@ -37,6 +37,7 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     double Ebeam_;
     int particle1Id_;
     int particle2Id_;
+    int index;
     bool debug;
     bool cmsAccept;
 
@@ -92,83 +93,27 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     TH1F* htprotonplus;
     TH1F* htprotonminus;
 
-    TH1F* hEntries;
-
-    // Counters
-    int nevents;
-    int zboson_counter;
-    int zbosondiff_counter;
-    int index;
-
     // Histogram variables
-    double sumHFMinusGEN;
-    double sumCastorGEN;
-    double sumHFPlusGEN;
-    double pf_gen;
-    double deltaeta;
-    double deltaphi;
-    double deltapt;
-    double vertex_d;
-    double xi;
-    double xi_minus;
-    double xi_plus;
-    double l1eta;
-    double l1phi;
-    double l1pt;
-    double l1energy;
-    double l1vx;
-    double l1vy;
-    double l1vz;
-    double l2eta;
-    double l2phi;
-    double l2pt;
-    double l2energy;
-    double l2vx;
-    double l2vy;
-    double l2vz;
-    double l1px;
-    double l1py;
-    double l1pz;
-    double l1pf;
-    double l2px;
-    double l2py;
-    double l2pz;
-    double l2pf;
-    double xiZ;
+    double sumHFMinusGEN, sumCastorGEN, sumHFPlusGEN;
+    double deltaeta, deltaphi, deltapt, vertex_d;
+    double genEPlusPz, genEMinusPz;
+    double xi, xi_minus, xi_plus, xiZ_plus, xiZ_minus, xiZ;
+    double xi_diff_plus; xi_diff_minus;
+    double l1eta, l1phi, l1pt, l1energy;
+    double l2eta, l2phi, l2pt, l2energy;
+    double l1px, l1py, l1pz, l1pf;
+    double l2px, l2py, l2pz, l2pf;
+    double l1vx,  l1vy, l1vz;
+    double l2vx, l2vy, l2vz;
     double xiProtonPlus;
     double xiProtonMinus;
-    double proton_px_plus;
-    double proton_py_plus;
-    double proton_pz_plus;
-    double proton_pf_plus;
-    double proton_px_minus;
-    double proton_py_minus;
-    double proton_pz_minus;
-    double proton_pf_minus;
-    double proton_energy_plus;
-    double proton_energy_minus;
+    double proton_eta_plus, proton_phi_plus, proton_pt_plus, proton_energy_plus;
+    double proton_px_plus, proton_py_plus, proton_pz_plus, proton_pf_plus;
+    double proton_eta_minus, proton_phi_minus, proton_pt_minus, proton_energy_minus;
+    double proton_px_minus, proton_py_minus, proton_pz_minus, proton_pf_minus;
+    double dibosonEta, dibosonPhi, dibosonPt, dibosonM;
+    double t_plus, t_minus;
     double pz_cut;
-    double genEPlusPz;
-    double genEMinusPz;
-    double t_plus;
-    double t_minus;
-    double dibosonEta;
-    double dibosonPhi;
-    double dibosonPt;
-    double dibosonM;
-
-    bool lepton1;
-    bool lepton2;
-    bool single_gap;
-    bool double_gap;
-    bool zboson;
-    bool zboson_diff;
-    bool HF_CASTOR_gap;
-    bool dilepton;
-    bool protonplus;
-    bool protonminus;
-    bool leptonAccept;
-    bool ptcut;
 
     std::vector <std::string> Group1;
 
@@ -217,13 +162,19 @@ void SDDYAnalyzer::beginJob(){
   edm::Service<TFileService> fs;
   TH1::SetDefaultSumw2(true);
 
-  std::string step0 = "without_cuts_AllParticles";
-  std::string step1 = "dileptons";
+  std::string step0 = "CMS_particles";
+  std::string step1 = "CMS_dilepton";
+  std::string step2 = "CMS_dileptonPt";
+  std::string step3 = "CMS_BosonZ";
+  std::string step4 = "CMS_BosonZGapCastor";
+  std::string step5 = "CMS_BosonZGapCastorAndHF";
 
   Group1.push_back(step0);
   Group1.push_back(step1);
-
-  hEntries = fs->make<TH1F>("hEntries","hEntries",10,0.,10.);
+  Group1.push_back(step2);
+  Group1.push_back(step3);
+  Group1.push_back(step4);
+  Group1.push_back(step5);
 
   for (std::vector<std::string>::size_type j=0; j<Group1.size(); j++){
 
@@ -348,14 +299,6 @@ void SDDYAnalyzer::beginJob(){
 }
 
 void SDDYAnalyzer::endJob(){
-
-  //Counters	
-  /*
-     hEntries->SetBinContent(2,nevents);
-     hEntries->SetBinContent(4,zboson_counter);
-     hEntries->SetBinContent(6,zbosondiff_counter);
-   */
-
 }
 
 void SDDYAnalyzer::fillHistos(int index){
@@ -395,60 +338,27 @@ void SDDYAnalyzer::fillHistos(int index){
 
 void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
-  sumHFMinusGEN = 0.;
-  sumCastorGEN = 0.;
-  sumHFPlusGEN = 0.;
-  proton_energy_plus = 0.;
-  proton_energy_minus = 0.;
-  deltaeta = 0.;
-  deltaphi = 0.;
-  deltapt = 0.;
-  vertex_d = 0.;
-  xi = 0.;
-  xi_minus = 0.;
-  xi_plus = 0.;
-  l1eta = 0.;
-  l1phi = 0.;
-  l1pt = 0.;
-  l1energy = 0.;
-  l1vx = 0.;
-  l1vy = 0.;
-  l1vz = 0.;
-  l2eta = 0.;
-  l2phi = 0.;
-  l2pt = 0.;
-  l2energy = 0.;
-  l2vx = 0.;
-  l2vy = 0.;
-  l2vz = 0.;
-  l1px = 0.;
-  l1py = 0.;
-  l1pz = 0.;
-  l1pf = 0.;
-  l2px = 0.;
-  l2py = 0.;
-  l2pz = 0.;
-  l2pf = 0.;
-  xiZ = 0.;
-  xiProtonPlus = -999;
-  xiProtonMinus = -999;
-  proton_px_plus = 0.;
-  proton_py_plus = 0.;
-  proton_pz_plus = 0.;
-  proton_pf_plus = 0.;
-  proton_px_minus = 0.;
-  proton_py_minus = 0.;
-  proton_pz_minus = 0.;
-  proton_pf_minus = 0.;
-  dibosonEta = 0.;
-  dibosonPhi = 0.;
-  dibosonPt = 0.;
-  dibosonM = 0.;
-  t_plus = 0.;
-  t_minus = 0.;
+  sumHFMinusGEN, sumCastorGEN, sumHFPlusGEN = 0.;
+  deltaeta, deltaphi, deltapt, vertex_d = 0.;
+  genEPlusPz, genEMinusPz = 0.;
+  xi, xi_minus, xi_plus, xiZ_plus, xiZ_minus, xiZ = -999.;
+  xi_diff_plus; xi_diff_minus = -999.;
+  l1eta, l1phi, l1pt, l1energy = 0.;
+  l2eta, l2phi, l2pt, l2energy = 0.;
+  l1px, l1py, l1pz, l1pf =0.;
+  l2px, l2py, l2pz, l2pf = 0.;
+  l1vx,  l1vy, l1vz = 0.;
+  l2vx, l2vy, l2vz = 0.;
+  xiProtonPlus = -999.;
+  xiProtonMinus = -999.;
+  proton_eta_plus, proton_phi_plus, proton_pt_plus, proton_energy_plus = 0.;
+  proton_px_plus, proton_py_plus, proton_pz_plus, proton_pf_plus = 0.;
+  proton_eta_minus, proton_phi_minus, proton_pt_minus, proton_energy_minus = 0.;
+  proton_px_minus, proton_py_minus, proton_pz_minus, proton_pf_minus = 0.;
+  dibosonEta, dibosonPhi, dibosonPt, dibosonM = 0.;
+  t_plus, t_minus = -999.;
   pz_cut = 0.75*Ebeam_;
-  genEPlusPz = 0.;
-  genEMinusPz = 0.;
+
   energy_genAll.clear();
   px_genAll.clear();
   py_genAll.clear();
@@ -463,19 +373,13 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   pt_genAll.clear();
   pdgIdAll.clear();
 
-  lepton1 = false;
-  lepton2 = false;
-  single_gap = false;
-  double_gap = false;
-  zboson = false;
-  zboson_diff = false;
+  lepton1, lepton2, dilepton = false;
+  single_gap, double_gap = false;
+  zboson, zboson_diff = false;
   HF_CASTOR_gap = false;
-  dilepton = false;
   protonplus = false;
   protonminus = false;
   ptcut = false;
-
-  nevents++;
 
   // Generator Particles
   edm::Handle<reco::GenParticleCollection> genParticles;
@@ -487,58 +391,84 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   reco::GenParticleCollection::const_iterator proton1 = genParticles->end();
   reco::GenParticleCollection::const_iterator proton2 = genParticles->end();
 
-  int counter_proton1 = 0;
-  int counter_proton2 = 0;
-  int counter_total_proton = 0;
-
   for(reco::GenParticleCollection::const_iterator genpart = genParticles->begin(); genpart != genParticles->end(); ++genpart){
 
     pf_gen = 0.;
 
-    if (debug) std::cout << ">>>>>>> pid,status,px,py,px,e= "  << genpart->pdgId() << " , " << genpart->status() << " , " << genpart->px() << " , " << genpart->py() << " , " << genpart->pz() << " , " << genpart->energy() << std::endl;
-
     if(genpart->status() != 1) continue; // only final state particles.
+
+    // Identifying Protons
+    if(genpart->pdgId() == 2212){
+
+      // Proton Scattered Positive Side
+      if(genpart->pz() > pz_cut){
+	proton1 = genpart;
+	proton_energy_plus = proton1->energy();
+	proton_px_plus = proton1->px();
+	proton_py_plus = proton1->py();
+	proton_pz_plus = proton1->pz();
+	proton_pt_plus = proton1->pt();
+	proton_pf_plus = sqrt(proton_px_plus*proton_px_plus+proton_py_plus*proton_py_plus+proton_pz_plus*proton_pz_plus);
+	protonplus=true;
+
+	xiProtonPlus = 1 - (proton_pz_plus/Ebeam_);
+	math::XYZTLorentzVector pi1(0,0,Ebeam_,Ebeam_);
+	math::XYZTLorentzVector pf1(proton_px_plus,proton_py_plus,proton_pz_plus,proton_energy_plus); // 4 momentum of p3
+	math::XYZTLorentzVector vec_t_plus = (pf1 - pi1);
+	t_plus=fabs(vec_t_plus.M2());
+
+	if (debug){
+	  std::cout << "< Proton Plus >" << std::endl;
+	  std::cout << "Quadrimomentum("<< proton_px_plus << "," << proton_py_plus << "," << proton_pz_plus << "," << proton_energy_plus << ") [GeV]"<< std::endl;
+	  std::cout << "Eta: "<< proton_eta_plus << ", phi: " << proton_phi_plus << ", pT: " << proton_pt_plus << "[GeV]"<< std::endl;
+	  std::cout << "t p-plus: " << t_plus << std::endl;
+	  std::cout << "xi plus: " << xiProtonPlus << std::endl;
+	  std::cout << "Vertex Rho: " << proton1->vertex().Rho() << std::endl;
+	  std::cout << "Vertex Z = " << proton1->vertex().Z() << std::endl;
+	  std::cout << "Vertex P("<< proton1->vx() << "," << proton1->vy() << "," <<  proton1->vz() << ") mm" << std::endl;
+	}
+      }
+
+      // Proton Scattered Negative Side
+      if(genpart->pz() < -pz_cut){
+	proton2 = genpart;
+	proton_energy_minus = proton2->energy();
+	proton_px_minus = proton2->px();
+	proton_py_minus = proton2->py();
+	proton_pz_minus = proton2->pz();
+	proton_pt_minus = proton2->pt();
+	proton_pf_minus = sqrt(proton_px_minus*proton_px_minus+proton_py_minus*proton_py_minus+proton_pz_minus*proton_pz_minus);
+	protonminus=true;
+
+	xiProtonMinus = 1 + (proton_pz_minus/Ebeam_);
+	math::XYZTLorentzVector pi2(0,0,Ebeam_,Ebeam_);
+	math::XYZTLorentzVector pf2(proton_px_minus,proton_py_minus,proton_pz_minus,proton_energy_minus); // 4 momentum of p3
+	math::XYZTLorentzVector vec_t_minus = (pf2 - pi2);
+	t_minus=fabs(vec_t_minus.M2());
+
+	if (debug){
+	  std::cout << "< Proton Minus >" << std::endl;
+	  std::cout << "Quadrimomentum("<< proton_px_minus << "," << proton_py_minus << "," << proton_pz_minus << "," << proton_energy_minus << ") [GeV]"<< std::endl;
+	  std::cout << "Eta: "<< proton_eta_minus << ", phi: " << proton_phi_minus << ", pT: " << proton_pt_minus << "[GeV]"<< std::endl;
+	  std::cout << "t p-minus: " << t_minus << std::endl;
+	  std::cout << "xi minus: " << xiProtonMinus<< std::endl;
+	  std::cout << "Vertex Rho: " << proton2->vertex().Rho() << std::endl;
+	  std::cout << "Vertex Z = " << proton2->vertex().Z() << std::endl;
+	  std::cout << "Vertex P("<< proton2->vx() << "," << proton2->vy() << "," <<  proton2->vz() << ") mm" << std::endl;
+	}
+      }
+
+    }
+
     if(cmsAccept && (genpart->eta() >=5.2 || genpart->eta() <= -6.2)) continue; // CMS Acceptance
 
     // identifying leptons
     if((particle1 == genParticles->end())&&(abs(genpart->pdgId()) == abs(particle1Id_))) {particle1 = genpart;lepton1=true;continue;}
     if((particle2 == genParticles->end())&&(abs(genpart->pdgId()) == abs(particle2Id_))) {particle2 = genpart;lepton2=true;continue;}
 
-    // identifying protons
-    if((genpart->pdgId() == 2212)){
 
-      counter_total_proton++;
-      if (debug) std::cout << "All Protons:  pT = " << genpart->pt() << " | eta = " << genpart->eta() << " | phi = " << genpart->phi() << " | pdgId = "<< genpart->pdgId() << " | Vertex Rho: " << genpart->vertex().Rho() << " | Vertex Z = " << genpart->vertex().Z() << " | Vertex P("<< genpart->vx() << "," << genpart->vy() << "," <<  genpart->vz() << ") mm" <<  std::endl;
-
-      if(genpart->pz() > 0){
-	//std::cout << "pZ cut: " << pz_cut << std::endl;
-	counter_proton1++;
-	proton1 = genpart;
-	proton_energy_plus = genpart->energy();
-	proton_px_plus = genpart->px();
-	proton_py_plus = genpart->py();
-	proton_pz_plus = genpart->pz();
-	proton_pf_plus = sqrt(genpart->px()*genpart->px()+genpart->py()*genpart->py()+genpart->pz()*genpart->pz());
-	protonplus=true;
-	if (debug) std::cout << "Proton Plus: pT = " << genpart->pt() << " | eta = " << genpart->eta() << " | phi = " << genpart->phi() << " | pdgId = "<< genpart->pdgId() << " | Vertex Rho: " << genpart->vertex().Rho() << " | Vertex Z = " << genpart->vertex().Z() << " | Vertex P("<< genpart->vx() << "," << genpart->vy() << "," <<  genpart->vz() << ") mm" << std::endl;
-      }
-    } else if((genpart->pdgId() == 2212)){
-      //if(genpart->pz() < -pz_cut){
-	counter_proton2++;
-	proton2 = genpart;
-	proton_energy_minus = genpart->energy();
-	proton_px_minus = genpart->px();
-	proton_py_minus = genpart->py();
-	proton_pz_minus = genpart->pz();
-	proton_pf_minus = sqrt(genpart->px()*genpart->px()+genpart->py()*genpart->py()+genpart->pz()*genpart->pz());
-	protonminus = true;
-	if (debug) std::cout << "Proton Minus: pT = " << genpart->pt() << " | eta = " << genpart->eta() << " | phi = " << genpart->phi() << " | pdgId = "<< genpart->pdgId() << " | Vertex Rho: " << genpart->vertex().Rho() << " | Vertex Z = " << genpart->vertex().Z() << " | Vertex P("<< genpart->vx() << "," << genpart->vy() << "," <<  genpart->vz() << ") mm" << std::endl;
-      //}
-    }
-
-    // Other particles, not proton
-    if (fabs(genpart->pz()) < pz_cut && genpart->pdgId() != 2212){
-
+    // Other particles, not proton. Detector noise approximation cut ~3 GeV.
+    if (fabs(genpart->pz()) > 3. && genpart->pdgId() != 2212){
       if (genpart->eta() <= -5.2 && genpart->eta() >= -6.2) sumCastorGEN += genpart->energy();
       if (genpart->eta() <= -3 && genpart->eta() >= -5.2) sumHFMinusGEN += genpart->energy();
       if (genpart->eta() >= 3 && genpart->eta() <= 5.2) sumHFPlusGEN += genpart->energy();
@@ -565,48 +495,21 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
   }
 
-  SDDYAnalyzer::fillHistos(0);
-
-  double test;
-  double magtest;
-  if(protonplus){
-    //std::cout << "Proton 1: " << proton1->pt() << " " << proton1->eta() << " " << proton1->phi() << std::endl;
-    if(proton_pz_plus > pz_cut){
-      xiProtonPlus = ( 1 - (proton1->pz()/Ebeam_) );
-      std::cout << "< Proton Plus >" << std::endl;
-      std::cout << "Quadrimomentum("<< proton1->px() << "," << proton1->py() << "," << proton1->pz() << "," << proton1->energy() << ") [GeV]"<< std::endl;
-      std::cout << "Eta: "<< proton1->eta() << ", phi: " << proton1->phi() << ", pT: " << proton1->pt() << "[GeV]"<< std::endl;
-      math::XYZTLorentzVector pi1(0,0,3500,3500);
-      math::XYZTLorentzVector pf1(proton_px_plus,proton_py_plus,proton_pz_plus,proton_energy_plus); // 4 momentum of p3
-      math::XYZTLorentzVector vec_t = (pf1 - pi1);
-      t_plus=vec_t.M2(); 
-      std::cout << "t p-plus: " << t_plus << std::endl;
-    }
-  }        
-
-  if(protonminus){
-    //std::cout << "Proton 2: " << proton2->pt() << " " << proton2->eta() << " " << proton2->phi() << std::endl;        
-    //if(proton_pz_minus < -pz_cut){
-      xiProtonMinus = (proton_pz_minus < 0.) ? ( 1 + (proton_pz_minus/Ebeam_) ) : -1.;
-      math::XYZTLorentzVector pi2(0,0,-3500,3500);
-      math::XYZTLorentzVector pf2(proton2->px(),proton2->py(),proton2->pz(),proton2->energy()); // 4 momentum of p3
-      math::XYZTLorentzVector vec_t = (pf2 - pi2);
-      t_minus=vec_t.M2();
-      //std::cout << "t p-minus: " << t_minus << std::endl;
-    //}
-  }
-
-/*
-    std::cout << "t p-plus: " << t_plus << std::endl;
-    std::cout << "t p-minus: " << t_minus << std::endl;
-*/
-    SDDYAnalyzer::fillHistos(1);
-
   if (lepton1 && lepton2) dilepton = true;
   if (protonplus || protonminus) single_gap = true;
   if (protonplus && protonminus) double_gap = true;
 
+  // Xi all particles
+  xi_minus = genEMinuzPz/(2*Ebeam_); 
+  xi_plus = genEPlusPz/(2*Ebeam_);
+  xi = xi_minus+xi_plus;
+
+  // Fill All CMS Particles and Proton
+  SDDYAnalyzer::fillHistos(0);
+
   if(dilepton){
+
+    // distance vertex dilepton
     vertex_d = sqrt( (particle2->px()-particle1->px())*(particle2->px()-particle1->px()) + (particle2->py()-particle1->py())*(particle2->py()-particle1->py()) + (particle2->pz()-particle1->pz())*(particle2->pz()-particle1->pz()));
 
     math::XYZTLorentzVector myboson(particle1->px() + particle2->px(),
@@ -619,26 +522,52 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
     dibosonPt = myboson.pt();
     dibosonM = myboson.M();
 
-    if(particle1->pt() > 10. && particle2->pt() > 10.) ptcut = true;
-    if((particle1->eta() > -2.5 && particle1->eta()< 2.5) && (particle2->eta() > -2.5 && particle2->eta()< 2.5) ) leptonAccept = true;
+    // Spectrum selection
     if(myboson.M() >= 60 && myboson.M() <= 110) {
-      zboson_counter++;
       zboson = true;
     }
-    if(sumHFMinusGEN == 0. && sumCastorGEN == 0.) {
-      zbosondiff_counter++;
-      HF_CASTOR_gap = true;
+
+    // xi Z positive scattering and xi all particles without Z
+    if (particle1->pz() > 0. && particle2->pz() > 0) {
+      xiZ_plus = (particle1->energy() + particle2->energy() + particle1->pz() + particle2->pz())/2*Ebeam_;
+      xi_diff_plus = xi_plus - xiZ_plus;
     }
 
-    //SDDYAnalyzer::fillHistos(1);
+    // xi Z negative scattering and xi all particles without Z
+    if (particle1->pz() < 0. && particle2->pz() < 0){
+      xiZ_minus = (particle1->energy() + particle2->energy() - particle1->pz() - particle2->pz())/2*Ebeam_;
+      xi_diff_minus = xi_minus - xiZ_minus;
+    }
 
-  } 
-
-  if (debug) {
-    std::cout << "Counter Total Proton: " << counter_total_proton << std::endl;
-    std::cout << "Counter Proton 1: " << counter_proton1 << std::endl;
-    std::cout << "Counter Proton 2: " << counter_proton2 << std::endl;
   }
+
+  // pT lepton cut (CMS approximation)
+  if(particle1->pt() > 10. && particle2->pt() > 10.) ptcut = true;
+
+  // Eta Acceptance CMS
+  if((particle1->eta() > -2.5 && particle1->eta()< 2.5) && (particle2->eta() > -2.5 && particle2->eta()< 2.5) ) leptonAccept = true; 
+
+  // Negative very restricted GAP?
+  if(sumHFMinusGEN == 0. && sumCastorGEN == 0.) {
+    HF_CASTOR_gap = true;
+  }
+
+  // Fill Histograms
+
+  // Dilepton CMS
+  if (dilepton && leptonAcceptance) SDDYAnalyzer::fillHistos(1);
+
+  // Dilepton CMS and pTCut
+  if (dilepton && leptonAcceptance && ptcut) SDDYAnalyzer::fillHistos(2);
+
+  // CMS Boson Z full selection
+  if (dilepton && leptonAcceptance && ptcut && zboson) SDDYAnalyzer::fillHistos(3);
+
+  // CMS Boson Z less restricted gap cut
+  if (dilepton && leptonAcceptance && ptcut && zboson && sumCastorGEN==0) SDDYAnalyzer::fillHistos(4);
+
+  // CMS Boson Z very restricted gap cut
+  if (dilepton && leptonAcceptance && ptcut && zboson && HF_CASTOR_GAP) SDDYAnalyzer::fillHistos(5);
 
 }	
 
