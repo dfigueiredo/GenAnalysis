@@ -2,6 +2,7 @@
 // GEN Diffractive Z Analyzer
 //---------------------------
 
+#define _USE_MATH_DEFINES
 #include "FWCore/Framework/interface/EDAnalyzer.h"
 #include "FWCore/Utilities/interface/InputTag.h"
 #include "TH1F.h"
@@ -16,6 +17,8 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 #include "TLorentzVector.h"
+#include <math.h>
+#include <cmath.h>
 
 class SDDYAnalyzer: public edm::EDAnalyzer {
   public:
@@ -65,8 +68,48 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     std::vector<TH1F*> hVectorDileptonPhi;
     std::vector<TH1F*> hVectorDileptonPt;
     std::vector<TH1F*> hVectorDileptonM;
+    
+    std::vector<TH1F*> hVectorLepton1Eta;
+    std::vector<TH1F*> hVectorLepton1Phi;
+    std::vector<TH1F*> hVectorLepton1Pt;
+    std::vector<TH1F*> hVectorLepton1Energy;
+    std::vector<TH1F*> hVectorLepton1px;
+    std::vector<TH1F*> hVectorLepton1py;
+    std::vector<TH1F*> hVectorLepton1pz;
+    std::vector<TH1F*> hVectorLepton1pf;
+    std::vector<TH1F*> hVectorLepton1vx;
+    std::vector<TH1F*> hVectorLepton1vy;
+    std::vector<TH1F*> hVectorLepton1vz;
+    
+    std::vector<TH1F*> hVectorLepton2Eta;
+    std::vector<TH1F*> hVectorLepton2Phi;
+    std::vector<TH1F*> hVectorLepton2Pt;
+    std::vector<TH1F*> hVectorLepton2Energy;
+    std::vector<TH1F*> hVectorLepton2px;
+    std::vector<TH1F*> hVectorLepton2py;
+    std::vector<TH1F*> hVectorLepton2pz;
+    std::vector<TH1F*> hVectorLepton2pf;
+    std::vector<TH1F*> hVectorLepton2vx;
+    std::vector<TH1F*> hVectorLepton2vy;
+    std::vector<TH1F*> hVectorLepton2vz;
+    
+    std::vector<TH1F*> hVectorLeptonDeltaEta;
+    std::vector<TH1F*> hVectorLeptonDeltaPhi;
+    std::vector<TH1F*> hVectorLeptonDeltaPt;
+    
     std::vector<TH1F*> hVectortprotonplus;
     std::vector<TH1F*> hVectortprotonminus;
+    
+    std::vector<TH1F*> hVectorXiZplus;
+    std::vector<TH1F*> hVectorXiZminus;
+    std::vector<TH1F*> hVectorXidiffplus;
+    std::vector<TH1F*> hVectorXidiffplus;
+    std::vector<TH1F*> hVectorXiprotonplus;
+    std::vector<TH1F*> hVectorXiprotonminus;
+    std::vector<TH1F*> hVectorXiAll;
+    std::vector<TH1F*> hVectorXiAllplus;
+    std::vector<TH1F*> hVectorXiAllminus;
+    
 
     TH1F* hPartEta;
     TH1F* hPartPt;
@@ -456,6 +499,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 	  std::cout << "Vertex Z = " << proton2->vertex().Z() << std::endl;
 	  std::cout << "Vertex P("<< proton2->vx() << "," << proton2->vy() << "," <<  proton2->vz() << ") mm" << std::endl;
 	}
+          
       }
 
     }
@@ -510,8 +554,24 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   if(dilepton){
 
     // distance vertex dilepton
-    vertex_d = sqrt( (particle2->px()-particle1->px())*(particle2->px()-particle1->px()) + (particle2->py()-particle1->py())*(particle2->py()-particle1->py()) + (particle2->pz()-particle1->pz())*(particle2->pz()-particle1->pz()));
+    vertex_d = sqrt( (particle2->vx()-particle1->vx())*(particle2->vx()-particle1->vx()) + (particle2->vy()-particle1->vy())*(particle2->vy()-particle1->vy()) + (particle2->vz()-particle1->vz())*(particle2->vz()-particle1->vz()));
 
+    l1eta = particle1->eta(); l1phi = particle1->phi(), l1pt = particle1->pt(), l1energy = particle1->energy();
+    l2eta = particle2->eta(); l2phi = particle2->phi(), l2pt = particle2->pt(), l2energy = particle2->energy();
+      
+    l1px = particle1->px(); l1py = particle1->py(); l1pz = particle1->pz();
+    l2px = particle2->px(); l2py = particle2->py(); l2pz = particle2->pz();
+      
+    l1f = sqrt(l1px*l1px+l1py*l1py+l1pz*l1pz);
+    l2f = sqrt(l2px*l2px+l2py*l2py+l2pz*l2pz);
+      
+    l1vx = particle1->vx();  l1vy = particle1->vy(); l1vz = particle1->vz();
+    l2vx = particle2->vx();  l2vy = particle2->vy(); l2vz = particle2->vz();
+
+    deltaeta = fabs(particle1->eta()-particle2->eta()); deltapt = fabs(particle1->pt()-particle2->pt());
+    deltaphi = fabs(particle1->phi() - particle2->phi());
+    if(deltaphi > M_PI){deltaphi = 2.0*M_PI - deltaphi;}
+      
     math::XYZTLorentzVector myboson(particle1->px() + particle2->px(),
 	particle1->py() + particle2->py(),
 	particle1->pz() + particle2->pz(),
@@ -526,19 +586,38 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
     if(myboson.M() >= 60 && myboson.M() <= 110) {
       zboson = true;
     }
-
     // xi Z positive scattering and xi all particles without Z
-    if (particle1->pz() > 0. && particle2->pz() > 0) {
+    if (myboson.eta() > 0) {
       xiZ_plus = (particle1->energy() + particle2->energy() + particle1->pz() + particle2->pz())/2*Ebeam_;
       xi_diff_plus = xi_plus - xiZ_plus;
     }
-
     // xi Z negative scattering and xi all particles without Z
-    if (particle1->pz() < 0. && particle2->pz() < 0){
+    if (myboson.eta() < 0 ){
       xiZ_minus = (particle1->energy() + particle2->energy() - particle1->pz() - particle2->pz())/2*Ebeam_;
       xi_diff_minus = xi_minus - xiZ_minus;
     }
-
+      
+      
+      if (debug){
+          std::cout << "< Dilepton >" << std::endl;
+          std::cout << "Lepton1("<< l1px << "," << l1py << "," << l1pz << "," << l1energy << ") [GeV]"<< std::endl;
+          std::cout << "Eta: "<< l1eta << ", phi: " << l1phi << ", pT: " << l1pt << "[GeV], pf: " << l1pf << "[GeV]"<<std::endl;
+          std::cout << "Vertex P("<< l1vx << "," << l1vy << "," <<  l1vz << ") mm" << std::endl;
+          std::cout << "\nLepton2("<< l2px << "," << l2py << "," << l2pz << "," << l2energy << ") [GeV]"<< std::endl;
+          std::cout << "Eta: "<< l2eta << ", phi: " << l2phi << ", pT: " << l2pt << "[GeV], pf: " << l2pf << "[GeV]"<< std::endl;
+          std::cout << "Vertex P("<< l2vz << "," << l2vy << "," <<  l2vz << ") mm" << std::endl;
+          std::cout << "Boson Z("<< myboson.px() << "," << myboson.py() << "," << myboson.pz() << "," << myboson.energy() << ") [GeV]" << std::endl;
+          std::cout << "Eta: "<< myboson.eta() << ", phi: " << myboson.phi() << ", pT: " << myboson.pt() << "[GeV] " <<std::endl;
+          std::cout << "Vertex P("<< myboson.vx() << "," << myboson.vy() << "," <<  myboson.vz() << ") mm" << std::endl;
+          std::cout << "xi Z plus: " << xiZ_plus << std::endl;
+          std::cout << "xi Z minus: " << xiZ_minus << std::endl;
+          std::cout << "xi diff plus: " << xi_diff_plus << std::endl;
+          std::cout << "xi diff minus: " << xi_diff_minus << std::endl;
+      }
+      
+      
+      
+      
   }
 
   // pT lepton cut (CMS approximation)
