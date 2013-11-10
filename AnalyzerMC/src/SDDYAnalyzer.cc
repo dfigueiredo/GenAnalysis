@@ -169,7 +169,7 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     TH1F* hXiZplus;
     TH1F* hXiZminus;
     TH1F* hXidiffplus;
-    TH1F* hXidiffplus;
+    TH1F* hXidiffminus;
     TH1F* hXiprotonplus;
     TH1F* hXiprotonminus;
     TH1F* hXiAll;
@@ -195,7 +195,7 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     double proton_eta_minus, proton_phi_minus, proton_pt_minus, proton_energy_minus;
     double proton_px_minus, proton_py_minus, proton_pz_minus, proton_pf_minus;
     double dibosonEta, dibosonPhi, dibosonPt, dibosonM;
-    double diboson_px; diboson_py; diboson_pz; diboson_pf, diboson_energy;
+    double diboson_px, diboson_py, diboson_pz, diboson_pf, diboson_energy;
     double t_plus, t_minus;
     double pz_cut;
     double pf_gen;
@@ -657,7 +657,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
     diboson_px = myboson.px();
     diboson_py = myboson.py();
     diboson_pz = myboson.pz();
-    diboson_energy() = myboson.energy();
+    diboson_energy = myboson.energy();
     diboson_pf = sqrt(diboson_px*diboson_px+diboson_py*diboson_py+diboson_pz*diboson_pz);
 
     // Spectrum selection
@@ -689,7 +689,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
       std::cout << "\nLepton2("<< l2px << "," << l2py << "," << l2pz << "," << l2energy << ") [GeV]"<< std::endl;
       std::cout << "Eta: "<< l2eta << ", phi: " << l2phi << ", pT: " << l2pt << "[GeV], pf: " << l2pf << "[GeV]"<< std::endl;
       std::cout << "Vertex P("<< l2vz << "," << l2vy << "," <<  l2vz << ") mm" << std::endl;
-      std::cout << "Boson Z("<< diboson_px << "," << diboson_px << "," << diboson_px << "," << diboson_energy << ") [GeV]" << std::endl;
+      std::cout << "Boson Z("<< diboson_px << "," << diboson_py << "," << diboson_pz << "," << diboson_energy << ") [GeV]" << std::endl;
       std::cout << "Eta: "<< dibosonEta << ", phi: " << dibosonPhi << ", pT: " << dibosonPt << "[GeV], pf: " << diboson_pf << "[GeV]"<<std::endl;
       std::cout << "Xi Z, plus: " << xiZ_plus << std::endl;
       std::cout << "Xi Z, Minus: "<< xiZ_minus << std::endl;
