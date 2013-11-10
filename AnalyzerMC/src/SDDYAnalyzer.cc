@@ -776,7 +776,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
       }
 
-      if(!cmsAccept || (cmsAccept && (genpart->eta() >=5.2 || genpart->eta() <= -6.2))){
+      if(!cmsAccept || (cmsAccept && (genpart->eta() <=5.2 || genpart->eta() >= -6.2))){
 
 	// identifying leptons
 	if((particle1 == genParticles->end())&&(abs(genpart->pdgId()) == abs(particle1Id_))) {particle1 = genpart;lepton1=true;continue;}
