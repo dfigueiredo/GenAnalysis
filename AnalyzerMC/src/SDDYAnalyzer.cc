@@ -393,7 +393,7 @@ void SDDYAnalyzer::beginJob(){
 
     char hLepton1vyN[300];
     sprintf(hLepton1vyN,"hLepton1vy_%s",Group1.at(j).c_str());
-    hLepton1Py = fs->make<TH1F>(hLepton1vyN,"Title...",20,0,500.);
+    hLepton1vy = fs->make<TH1F>(hLepton1vyN,"Title...",20,0,500.);
     hVectorLepton1vy.push_back(hLepton1vy);
 
     char hLepton1vzN[300];
@@ -406,7 +406,7 @@ void SDDYAnalyzer::beginJob(){
     hLepton2Eta = fs->make<TH1F>(hLepton2EtaN,"Title...",20,0,500.);
     hVectorLepton2Eta.push_back(hLepton2Eta);
 
-    char hLepton1PhiN[300];
+    char hLepton2PhiN[300];
     sprintf(hLepton2PhiN,"hLepton2Phi_%s",Group1.at(j).c_str());
     hLepton2Phi = fs->make<TH1F>(hLepton2PhiN,"Title...",20,0,500.);
     hVectorLepton2Phi.push_back(hLepton2Phi);
@@ -441,14 +441,14 @@ void SDDYAnalyzer::beginJob(){
     hLepton2pf = fs->make<TH1F>(hLepton2pfN,"Title...",20,0,500.);
     hVectorLepton2pf.push_back(hLepton2pf);
 
-    char hLepton1vxN[300];
+    char hLepton2vxN[300];
     sprintf(hLepton2vxN,"hLepton2vx_%s",Group1.at(j).c_str());
     hLepton2vx = fs->make<TH1F>(hLepton2vxN,"Title...",20,0,500.);
     hVectorLepton2vx.push_back(hLepton2vx);
 
     char hLepton2vyN[300];
     sprintf(hLepton2vyN,"hLepton2vy_%s",Group1.at(j).c_str());
-    hLepton2Py = fs->make<TH1F>(hLepton2vyN,"Title...",20,0,500.);
+    hLepton2vy = fs->make<TH1F>(hLepton2vyN,"Title...",20,0,500.);
     hVectorLepton2vy.push_back(hLepton2vy);
 
     char hLepton2vzN[300];
