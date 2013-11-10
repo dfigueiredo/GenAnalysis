@@ -331,11 +331,6 @@ void SDDYAnalyzer::beginJob(){
     hPartPDGId = fs->make<TH1F>(hPartPDGIdN,"Title...",20,0,500.);
     hVectorPartPDGId.push_back(hPartPDGId);
 
-    char hDileptonVertexDN[300];
-    sprintf(hDileptonVertexDN,"hDileptonVertexD_%s",Group1.at(j).c_str());
-    hDileptonVertexD = fs->make<TH1F>(hDileptonVertexDN,"Title...",20,0,500.);
-    hVectorDileptonVertexD.push_back(hDileptonVertexD);
-
     char hHFPlusEN[300];
     sprintf(hHFPlusEN,"hHFPlusE_%s",Group1.at(j).c_str());
     hHFPlusE = fs->make<TH1F>(hHFPlusEN,"Title...",20,0,500.);
@@ -350,6 +345,121 @@ void SDDYAnalyzer::beginJob(){
     sprintf(hCastorEN,"hCastorE_%s",Group1.at(j).c_str());
     hCastorE = fs->make<TH1F>(hCastorEN,"Title...",20,0,500.);
     hVectorCastorE.push_back(hCastorE);
+
+    char hLepton1EtaN[300];
+    sprintf(hLepton1EtaN,"hLepton1Eta_%s",Group1.at(j).c_str());
+    hLepton1Eta = fs->make<TH1F>(hLepton1EtaN,"Title...",20,0,500.);
+    hVectorLepton1Eta.push_back(hLepton1Eta);
+
+    char hLepton1PhiN[300];
+    sprintf(hLepton1PhiN,"hLepton1Phi_%s",Group1.at(j).c_str());
+    hLepton1Phi = fs->make<TH1F>(hLepton1PhiN,"Title...",20,0,500.);
+    hVectorLepton1Phi.push_back(hLepton1Phi);
+
+    char hLepton1PtN[300];
+    sprintf(hLepton1PtN,"hLepton1Pt_%s",Group1.at(j).c_str());
+    hLepton1Pt = fs->make<TH1F>(hLepton1PtN,"Title...",20,0,500.);
+    hVectorLepton1Pt.push_back(hLepton1Pt);
+
+    char hLepton1EnergyN[300];
+    sprintf(hLepton1EnergyN,"hLepton1Energy_%s",Group1.at(j).c_str());
+    hLepton1Energy = fs->make<TH1F>(hLepton1EnergyN,"Title...",20,0,500.);
+    hVectorLepton1Energy.push_back(hLepton1Energy);
+
+    char hLepton1pxN[300];
+    sprintf(hLepton1pxN,"hLepton1px_%s",Group1.at(j).c_str());
+    hLepton1px = fs->make<TH1F>(hLepton1pxN,"Title...",20,0,500.);
+    hVectorLepton1px.push_back(hLepton1px);
+
+    char hLepton1pyN[300];
+    sprintf(hLepton1pyN,"hLepton1py_%s",Group1.at(j).c_str());
+    hLepton1py = fs->make<TH1F>(hLepton1pyN,"Title...",20,0,500.);
+    hVectorLepton1py.push_back(hLepton1py);
+
+    char hLepton1pzN[300];
+    sprintf(hLepton1pzN,"hLepton1pz_%s",Group1.at(j).c_str());
+    hLepton1pz = fs->make<TH1F>(hLepton1pzN,"Title...",20,0,500.);
+    hVectorLepton1pz.push_back(hLepton1pz);
+
+    char hLepton1pfN[300];
+    sprintf(hLepton1pfN,"hLepton1pf_%s",Group1.at(j).c_str());
+    hLepton1pf = fs->make<TH1F>(hLepton1pfN,"Title...",20,0,500.);
+    hVectorLepton1pf.push_back(hLepton1pf);
+
+    char hLepton1vxN[300];
+    sprintf(hLepton1vxN,"hLepton1vx_%s",Group1.at(j).c_str());
+    hLepton1vx = fs->make<TH1F>(hLepton1vxN,"Title...",20,0,500.);
+    hVectorLepton1vx.push_back(hLepton1vx);
+
+    char hLepton1vyN[300];
+    sprintf(hLepton1vyN,"hLepton1vy_%s",Group1.at(j).c_str());
+    hLepton1Py = fs->make<TH1F>(hLepton1vyN,"Title...",20,0,500.);
+    hVectorLepton1vy.push_back(hLepton1vy);
+
+    char hLepton1vzN[300];
+    sprintf(hLepton1vzN,"hLepton1vz_%s",Group1.at(j).c_str());
+    hLepton1vz = fs->make<TH1F>(hLepton1vzN,"Title...",20,0,500.);
+    hVectorLepton1vz.push_back(hLepton1vz);
+
+    char hLepton2EtaN[300];
+    sprintf(hLepton2EtaN,"hLepton2Eta_%s",Group1.at(j).c_str());
+    hLepton2Eta = fs->make<TH1F>(hLepton2EtaN,"Title...",20,0,500.);
+    hVectorLepton2Eta.push_back(hLepton2Eta);
+
+    char hLepton1PhiN[300];
+    sprintf(hLepton2PhiN,"hLepton2Phi_%s",Group1.at(j).c_str());
+    hLepton2Phi = fs->make<TH1F>(hLepton2PhiN,"Title...",20,0,500.);
+    hVectorLepton2Phi.push_back(hLepton2Phi);
+
+    char hLepton2PtN[300];
+    sprintf(hLepton2PtN,"hLepton2Pt_%s",Group1.at(j).c_str());
+    hLepton2Pt = fs->make<TH1F>(hLepton2PtN,"Title...",20,0,500.);
+    hVectorLepton2Pt.push_back(hLepton2Pt);
+
+    char hLepton2EnergyN[300];
+    sprintf(hLepton2EnergyN,"hLepton2Energy_%s",Group1.at(j).c_str());
+    hLepton2Energy = fs->make<TH1F>(hLepton2EnergyN,"Title...",20,0,500.);
+    hVectorLepton2Energy.push_back(hLepton2Energy);
+
+    char hLepton2pxN[300];
+    sprintf(hLepton2pxN,"hLepton2px_%s",Group1.at(j).c_str());
+    hLepton2px = fs->make<TH1F>(hLepton2pxN,"Title...",20,0,500.);
+    hVectorLepton2px.push_back(hLepton2px);
+
+    char hLepton2pyN[300];
+    sprintf(hLepton2pyN,"hLepton2py_%s",Group1.at(j).c_str());
+    hLepton2py = fs->make<TH1F>(hLepton2pyN,"Title...",20,0,500.);
+    hVectorLepton2py.push_back(hLepton2py);
+
+    char hLepton2pzN[300];
+    sprintf(hLepton2pzN,"hLepton2pz_%s",Group1.at(j).c_str());
+    hLepton2pz = fs->make<TH1F>(hLepton2pzN,"Title...",20,0,500.);
+    hVectorLepton2pz.push_back(hLepton2pz);
+
+    char hLepton2pfN[300];
+    sprintf(hLepton2pfN,"hLepton2pf_%s",Group1.at(j).c_str());
+    hLepton2pf = fs->make<TH1F>(hLepton2pfN,"Title...",20,0,500.);
+    hVectorLepton2pf.push_back(hLepton2pf);
+
+    char hLepton1vxN[300];
+    sprintf(hLepton2vxN,"hLepton2vx_%s",Group1.at(j).c_str());
+    hLepton2vx = fs->make<TH1F>(hLepton2vxN,"Title...",20,0,500.);
+    hVectorLepton2vx.push_back(hLepton2vx);
+
+    char hLepton2vyN[300];
+    sprintf(hLepton2vyN,"hLepton2vy_%s",Group1.at(j).c_str());
+    hLepton2Py = fs->make<TH1F>(hLepton2vyN,"Title...",20,0,500.);
+    hVectorLepton2vy.push_back(hLepton2vy);
+
+    char hLepton2vzN[300];
+    sprintf(hLepton2vzN,"hLepton2vz_%s",Group1.at(j).c_str());
+    hLepton2vz = fs->make<TH1F>(hLepton2vzN,"Title...",20,0,500.);
+    hVectorLepton2vz.push_back(hLepton2vz);
+
+    char hDileptonVertexDN[300];
+    sprintf(hDileptonVertexDN,"hDileptonVertexD_%s",Group1.at(j).c_str());
+    hDileptonVertexD = fs->make<TH1F>(hDileptonVertexDN,"Title...",20,0,500.);
+    hVectorDileptonVertexD.push_back(hDileptonVertexD);
 
     char hDileptonEtaN[300];
     sprintf(hDileptonEtaN,"hDileptonEta_%s",Group1.at(j).c_str());
@@ -371,6 +481,21 @@ void SDDYAnalyzer::beginJob(){
     hDileptonM = fs->make<TH1F>(hDileptonMN,"Title...",20,0,500.);
     hVectorDileptonM.push_back(hDileptonM);
 
+    char hLeptonDeltaEtaN[300];
+    sprintf(hLeptonDeltaEtaN,"hLeptonDeltaEta_%s",Group1.at(j).c_str());
+    hLeptonDeltaEta = fs->make<TH1F>(hLeptonDeltaEtaN,"Title...",20,0,500.);
+    hVectorLeptonDeltaEta.push_back(hLeptonDeltaEta);
+
+    char hLeptonDeltaPhiN[300];
+    sprintf(hLeptonDeltaPhiN,"hLeptonDeltaPhi_%s",Group1.at(j).c_str());
+    hLeptonDeltaPhi = fs->make<TH1F>(hLeptonDeltaPhiN,"Title...",20,0,500.);
+    hVectorLeptonDeltaPhi.push_back(hLeptonDeltaPhi);
+
+    char hLeptonDeltaPtN[300];
+    sprintf(hLeptonDeltaPtN,"hLeptonDeltaPt_%s",Group1.at(j).c_str());
+    hLeptonDeltaPt = fs->make<TH1F>(hLeptonDeltaPtN,"Title...",20,0,500.);
+    hVectorLeptonDeltaPt.push_back(hLeptonDeltaPt);
+
     char htprotonplusN[300];
     sprintf(htprotonplusN,"htprotonplus_%s",Group1.at(j).c_str());
     htprotonplus = fs->make<TH1F>(htprotonplusN,"Title...",100,0,0.5);
@@ -381,6 +506,51 @@ void SDDYAnalyzer::beginJob(){
     htprotonminus = fs->make<TH1F>(htprotonminusN,"Title...",100,0,0.5);
     hVectortprotonminus.push_back(htprotonminus);
 
+    char hXiZplusN[300];
+    sprintf(hXiZplusN,"hXiZplus_%s",Group1.at(j).c_str());
+    hXiZplus = fs->make<TH1F>(hXiZplusN,"Title...",100,0,0.5);
+    hVectorXiZplus.push_back(hXiZplus);
+
+    char hXiZminusN[300];
+    sprintf(hXiZminusN,"hXiZminus_%s",Group1.at(j).c_str());
+    hXiZminus = fs->make<TH1F>(hXiZminusN,"Title...",100,0,0.5);
+    hVectorXiZminus.push_back(hXiZminus);
+
+    char hXidiffplusN[300];
+    sprintf(hXidiffplusN,"hXidiffplus_%s",Group1.at(j).c_str());
+    hXidiffplus = fs->make<TH1F>(hXidiffplusN,"Title...",100,0,0.5);
+    hVectorXidiffplus.push_back(hXidiffplus);
+
+    char hXidiffminusN[300];
+    sprintf(hXidiffminusN,"hXidiffminus_%s",Group1.at(j).c_str());
+    hXidiffminus = fs->make<TH1F>(hXidiffminusN,"Title...",100,0,0.5);
+    hVectorXidiffminus.push_back(hXidiffminus);
+
+    char hXiprotonplusN[300];
+    sprintf(hXiprotonplusN,"hXiprotonplus_%s",Group1.at(j).c_str());
+    hXiprotonplus = fs->make<TH1F>(hXiprotonplusN,"Title...",100,0,0.5);
+    hVectorXiprotonplus.push_back(hXiprotonplus);
+
+    char hXiprotonminusN[300];
+    sprintf(hXiprotonminusN,"hXiprotonminus_%s",Group1.at(j).c_str());
+    hXiprotonminus = fs->make<TH1F>(hXiprotonminusN,"Title...",100,0,0.5);
+    hVectorXiprotonminus.push_back(hXiprotonminus);
+
+    char hXiAllplusN[300];
+    sprintf(hXiAllplusN,"hXiAllplus_%s",Group1.at(j).c_str());
+    hXiAllplus = fs->make<TH1F>(hXiAllplusN,"Title...",100,0,0.5);
+    hVectorXiAllplus.push_back(hXiAllplus);
+
+    char hXiAllminusN[300];
+    sprintf(hXiAllminusN,"hXiAllminus_%s",Group1.at(j).c_str());
+    hXiAllminus = fs->make<TH1F>(hXiAllminusN,"Title...",100,0,0.5);
+    hVectorXiAllminus.push_back(hXiAllminus);
+
+    char hXiAllN[300];
+    sprintf(hXiAllN,"hXiAll_%s",Group1.at(j).c_str());
+    hXiAll = fs->make<TH1F>(hXiAllN,"Title...",100,0,0.5);
+    hVectorXiAll.push_back(hXiAll);
+
   }
 
 
@@ -390,8 +560,6 @@ void SDDYAnalyzer::endJob(){
 }
 
 void SDDYAnalyzer::fillHistos(int index){
-
-  if (debug) std::cout << "\nFilling histograms..." << std::endl;
 
   for (std::vector<std::string>::size_type j=0; j<etaAll.size(); j++){
     hVectorPartEta.at(index)->Fill(etaAll.at(j));
@@ -409,16 +577,56 @@ void SDDYAnalyzer::fillHistos(int index){
     hVectorPartPDGId.at(index)->Fill(pdgIdAll.at(j));
   }
 
-  hVectorDileptonVertexD.at(index)->Fill(vertex_d);
   hVectorHFPlusE.at(index)->Fill(sumHFPlusGEN);
   hVectorHFMinusE.at(index)->Fill(sumHFMinusGEN);
   hVectorCastorE.at(index)->Fill(sumCastorGEN);
+
+  hVectorLepton1Eta.at(index)->Fill(l1eta);
+  hVectorLepton1Phi.at(index)->Fill(l1phi);
+  hVectorLepton1Pt.at(index)->Fill(l1pt);
+  hVectorLepton1Energy.at(index)->Fill(l1energy);
+  hVectorLepton1px.at(index)->Fill(l1px);
+  hVectorLepton1py.at(index)->Fill(l1py);
+  hVectorLepton1pz.at(index)->Fill(l1pz);
+  hVectorLepton1pf.at(index)->Fill(l1pf);
+  hVectorLepton1vx.at(index)->Fill(l1vx);
+  hVectorLepton1vy.at(index)->Fill(l1vy);
+  hVectorLepton1vz.at(index)->Fill(l1vz);
+
+  hVectorLepton2Eta.at(index)->Fill(l2eta);
+  hVectorLepton2Phi.at(index)->Fill(l2phi);
+  hVectorLepton2Pt.at(index)->Fill(l2pt);
+  hVectorLepton2Energy.at(index)->Fill(l2energy);
+  hVectorLepton2px.at(index)->Fill(l2px);
+  hVectorLepton2py.at(index)->Fill(l2py);
+  hVectorLepton2pz.at(index)->Fill(l2pz);
+  hVectorLepton2pf.at(index)->Fill(l2pf);
+  hVectorLepton2vx.at(index)->Fill(l2vx);
+  hVectorLepton2vy.at(index)->Fill(l2vy);
+  hVectorLepton2vz.at(index)->Fill(l2vz);
+
+  hVectorDileptonVertexD.at(index)->Fill(vertex_d);
   hVectorDileptonEta.at(index)->Fill(dibosonEta);
   hVectorDileptonPhi.at(index)->Fill(dibosonPhi);
   hVectorDileptonPt.at(index)->Fill(dibosonPt);
   hVectorDileptonM.at(index)->Fill(dibosonM);
+
+  hVectorLeptonDeltaEta.at(index)->Fill(deltaeta);
+  hVectorLeptonDeltaPhi.at(index)->Fill(deltaphi);
+  hVectorLeptonDeltaPt.at(index)->Fill(deltapt);
+
   hVectortprotonplus.at(index)->Fill(t_plus);
   hVectortprotonminus.at(index)->Fill(t_minus);
+
+  hVectorXiZplus.at(index)->Fill(xiZ_plus);
+  hVectorXiZminus.at(index)->Fill(xiZ_minus);
+  hVectorXidiffplus.at(index)->Fill(xi_diff_plus);
+  hVectorXidiffminus.at(index)->Fill(xi_diff_minus);
+  hVectorXiprotonplus.at(index)->Fill(xiProtonPlus);
+  hVectorXiprotonminus.at(index)->Fill(xiProtonMinus);
+  hVectorXiAll.at(index)->Fill(xi);
+  hVectorXiAllplus.at(index)->Fill(xi_plus);
+  hVectorXiAllminus.at(index)->Fill(xi_minus);
 
 }
 
