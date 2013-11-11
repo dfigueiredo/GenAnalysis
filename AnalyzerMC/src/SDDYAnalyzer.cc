@@ -112,6 +112,9 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     std::vector<TH1F*> hVectorXiAllminus;
     std::vector<TH1F*> hVectorXiDiffAll;
 
+    std::vector<TH1F*> hVectorGapSizeAll;
+    std::vector<TH1F*> hVectorGapSizeZ;
+
 
     TH1F* hPartEta;
     TH1F* hPartPt;
@@ -180,6 +183,9 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     TH1F* hXiAllminus;
     TH1F* hXiDiffAll;
 
+    TH1F* hVectorGapSizeAll;
+    TH1F* hVectorGapSizeZ;
+
     // Histogram variables
     double sumHFMinusGEN, sumCastorGEN, sumHFPlusGEN;
     double deltaeta, deltaphi, deltapt, vertex_d;
@@ -204,6 +210,7 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     double t_plus, t_minus;
     double pz_cut;
     double pf_gen;
+    double gapsizeall, gapsizeZ;
 
     bool lepton1, lepton2, dilepton, leptonAcceptance;
     bool single_gap, double_gap;
@@ -495,7 +502,7 @@ void SDDYAnalyzer::beginJob(){
     sprintf(hLeptonDeltaPtN,"hLeptonDeltaPt_%s",Group1.at(j).c_str());
     hLeptonDeltaPt = fs->make<TH1F>(hLeptonDeltaPtN,";#Delta pT Lepton [GeV]; #N Events",500,0.,200.);
     hVectorLeptonDeltaPt.push_back(hLeptonDeltaPt);
-      
+
     char hLeptonVertexDN[300];
     sprintf(hLeptonVertexDN,"hLeptonVertexD_%s",Group1.at(j).c_str());
     hLeptonVertexD = fs->make<TH1F>(hLeptonVertexDN,";#Delta Vertex Lepton position [mm]; #N Events",100,0.,20.);
@@ -540,7 +547,7 @@ void SDDYAnalyzer::beginJob(){
     sprintf(hXiprotonminusN,"hXiprotonminus_%s",Group1.at(j).c_str());
     hXiprotonminus = fs->make<TH1F>(hXiprotonminusN,"; #xi^{-}; #N Events",1000,0,1.);
     hVectorXiprotonminus.push_back(hXiprotonminus);
-      
+
     char hXiDiffprotonN[300];
     sprintf(hXiDiffprotonN,"hXiDiffproton_%s",Group1.at(j).c_str());
     hXiDiffproton = fs->make<TH1F>(hXiDiffprotonN,"; |#xi^{+} - #xi^{-}|; #N Events",1000,0,1.);
@@ -560,11 +567,21 @@ void SDDYAnalyzer::beginJob(){
     sprintf(hXiAllN,"hXiAll_%s",Group1.at(j).c_str());
     hXiAll = fs->make<TH1F>(hXiAllN,";#xi_{all particles}^{+} + #xi_{all particles}^{-}; #N Events",1000,0,1.);
     hVectorXiAll.push_back(hXiAll);
-      
+
     char hXiDiffAllN[300];
     sprintf(hXiDiffAllN,"hXiDiffAll_%s",Group1.at(j).c_str());
     hXiDiffAll = fs->make<TH1F>(hXiDiffAllN,";|#xi_{all particles}^{+} - #xi_{all particles}^{-}|; #N Events",1000,0,1.);
     hVectorXiDiffAll.push_back(hXiDiffAll);
+
+    char hGapSizeAllN[300];
+    sprintf(hGapSizeAllN,"hGapSizeAll_%s",Group1.at(j).c_str());
+    hGapSizeAll = fs->make<TH1F>(hGapSizeAllN,";#Delta#eta all particles; #N Events",1000,0,10);
+    hVectorGapSizeAll.push_back(hGapSizeAll);
+
+    char hGapSizeZN[300];
+    sprintf(hGapSizeZN,"hGapSizeZ_%s",Group1.at(j).c_str());
+    hGapSizeZ = fs->make<TH1F>(hGapSizeZN,";#Delta#eta, 60 < M_{ll} < 110 [GeV]; #N Events",1000,0,10);
+    hVectorGapSizeZ.push_back(hGapSizeZ);
 
   }
 
@@ -644,6 +661,8 @@ void SDDYAnalyzer::fillHistos(int index){
   hVectorXiDiffAll.at(index)->Fill(xi_diff);
   hVectorXiAllplus.at(index)->Fill(xi_plus);
   hVectorXiAllminus.at(index)->Fill(xi_minus);
+  hVectorGapSizeZ.at(index)->Fill(gapsizeZ);
+  hVectorGapSizeAll.at(index)->Fill(gapsizeall);
 
 }
 
@@ -675,6 +694,8 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   diboson_px = 0.; diboson_py = 0.; diboson_pz = 0.; diboson_pf = 0., diboson_energy = 0.;
   t_plus = 0.; t_minus = -999.;
   pz_cut = 0.70*Ebeam_;
+  gapsizeall = 0.; gapsizeZ = 0.;
+  double s = (2*Ebeam_)*(2*Ebeam_);
 
   energy_genAll.clear();
   px_genAll.clear();
@@ -710,6 +731,8 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
   double pz1max = 0.;
   double pz2min = 0.;
+  double M_x = 0.;
+
   for(reco::GenParticleCollection::const_iterator genpart = genParticles->begin(); genpart != genParticles->end(); ++genpart){
 
     pf_gen = 0.;
@@ -791,9 +814,9 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 	    }
 	  }
 	}
-          
-      xiDiffProton = fabs(xiProtonMinus - xiProtonPlus);
-          
+
+	xiDiffProton = fabs(xiProtonMinus - xiProtonPlus);
+
       }
 
       if(!cmsAccept || (cmsAccept && (genpart->eta() <=5.2 || genpart->eta() >= -6.2))){
@@ -825,7 +848,8 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 	  pdgIdAll.push_back(genpart->pdgId());
 
 	  genEPlusPz += (genpart->energy() + genpart->pz());
-	  genEMinusPz += (genpart->energy() - genpart->pz());         
+	  genEMinusPz += (genpart->energy() - genpart->pz());
+	  M_x += genpart->mass();
 
 	}
       }
@@ -842,6 +866,10 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
   xi_plus = genEPlusPz/(2*Ebeam_);
   xi = xi_minus+xi_plus;
   xi_diff = fabs(xi_minus-xi_plus);
+
+  // GapSize all particles
+  gapsizeall = log(s/M_x);
+
   if (debug){
     std::cout << "\n< Xi Particles >" << std::endl;
     std::cout << "Xi Plus: " << xi_plus << std::endl;
@@ -889,6 +917,9 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
     diboson_pz = myboson.pz();
     diboson_energy = myboson.energy();
     diboson_pf = sqrt(diboson_px*diboson_px+diboson_py*diboson_py+diboson_pz*diboson_pz);
+
+    // GapSize all particles
+    gapsizeZ = log(s/myboson.M());
 
     // Spectrum selection
     if(myboson.M() >= 60 && myboson.M() <= 110) {
