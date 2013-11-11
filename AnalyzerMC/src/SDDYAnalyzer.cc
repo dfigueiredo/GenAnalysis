@@ -183,8 +183,8 @@ class SDDYAnalyzer: public edm::EDAnalyzer {
     TH1F* hXiAllminus;
     TH1F* hXiDiffAll;
 
-    TH1F* hVectorGapSizeAll;
-    TH1F* hVectorGapSizeZ;
+    TH1F* hGapSizeAll;
+    TH1F* hGapSizeZ;
 
     // Histogram variables
     double sumHFMinusGEN, sumCastorGEN, sumHFPlusGEN;
