@@ -9,10 +9,10 @@
     Hadron Level analysis
     
     Usage:
-    cmsRun analysisGEN_Z.py
+    cmsRun analyzeGEN_Z_cfg.py
     
     Example:
-    cmsRun analysisGEN_Z.py Run=muon Type=diffractive
+    cmsRun analyzeGEN_Z_cfg.py Run=muon Type=diffractive
     
     Optional arguments:
     Run = muon or electron
@@ -27,7 +27,7 @@ import atexit
 
 from FWCore.ParameterSet.VarParsing import VarParsing
 options = VarParsing ('analysis')
-options.register('Run','electron',VarParsing.multiplicity.singleton, VarParsing.varType.string,"Option to Run: muon or electron")
+options.register('Run','muon',VarParsing.multiplicity.singleton, VarParsing.varType.string,"Option to Run: muon or electron")
 options.register('Type','diffractive',VarParsing.multiplicity.singleton, VarParsing.varType.string,"diffractive or nondiffractive")
 options.parseArguments()
 
@@ -35,7 +35,7 @@ process = cms.Process('Analysis')
 
 class config: pass
 config.outputFile = "output.root" # output file name
-config.EBeam = 3500.0 # Energy only one beam. CM = 2*EBeam
+config.Ebeam = 3500.0 # Energy only one beam. CM = 2*EBeam
 config.NumberOfEvents = 5000 # number of events
 config.debug = False # track errors
 config.drawer = False # draw particle GEN chain
@@ -58,7 +58,7 @@ if options.Run == "electron":
     config.pdgid1 = 11
     config.pdgid2 = -11
     if options.Type == "nondiffractive":
-       config.input = "file:/storage1/dmf/TestSamples/DyToMuMuPU2010/DyToMuMu.root"
+       config.input = "file:/storage1/dmf/TestSamples/DyToEEPU2010/DyToEE.root"
     elif options.Type == "diffractive":
        config.input = "file:/storage1/dmf/Samples/DiffractiveZ/GEN/pompyt_minus_Z_M20_cff_py_GEN_7TeV.root"
     else:
@@ -76,7 +76,7 @@ elif options.Run == "muon":
     config.pdgid1 = 13
     config.pdgid2 = -13
     if options.Type == "nondiffractive":
-        config.input = "file:/storage1/dmf/TestSamples/DyToEEPU2010/DyToEE.root"
+        config.input = "file:/storage1/dmf/TestSamples/DyToMuMuPU2010/DyToMuMu.root"
     elif options.Type == "diffractive":
         config.input = "file:/storage1/dmf/Samples/DiffractiveZ/GEN/pompyt_minus_Z_M20_cff_py_GEN_7TeV.root"
     else:
@@ -97,9 +97,10 @@ print("Type of GEN Analysis: %s" % options.Run)
 print("Type of process: %s" % options.Type)
 print("PDG Id Lepton 1: %s" % config.pdgid1)
 print("PDG Id Lepton 2: %s" % config.pdgid2)
-print("CM Energy: %s" % 2*config.comEnergy)
+print("Energy beam: %.2f" % config.Ebeam)
 print("Debug: %s" % config.debug)
-print("Output file: %s" % config.outputfile)
+print("Output file: %s" % config.outputFile)
+print("")
 
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(config.NumberOfEvents)
@@ -117,7 +118,7 @@ process.SDDY = cms.EDAnalyzer("SDDYAnalyzer",
 	GenParticleTag = cms.InputTag("genParticles"),
 	Particle1Id = cms.int32(config.pdgid1),
 	Particle2Id = cms.int32(config.pdgid2),
-    EBeam = cms.double(config.comEnergy),
+    EBeam = cms.double(config.Ebeam),
 	debug = cms.untracked.bool(config.debug)
 )
 
