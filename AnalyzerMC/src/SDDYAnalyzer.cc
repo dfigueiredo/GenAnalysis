@@ -670,8 +670,6 @@ void SDDYAnalyzer::fillHistos(int index){
 
 void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 
-  bool debug_proton = true;
-
   sumHFMinusGEN = 0.; sumCastorGEN = 0.; sumHFPlusGEN = 0.;
   deltaeta = 0.; deltaphi = 0.; deltapt = 0.; vertex_d = 0.;
   genEPlusPz = 0.; genEMinusPz = 0.;
@@ -765,7 +763,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 	    math::XYZTLorentzVector vec_t_plus = (pf1 - pi1);
 	    t_plus=fabs(vec_t_plus.mag2());
 
-	    if (debug_proton){
+	    if (debug){
 	      std::cout << "\n< Proton Plus >" << std::endl;
 	      std::cout << "Quadrimomentum("<< proton_px_plus << "," << proton_py_plus << "," << proton_pz_plus << "," << proton_energy_plus << ") [GeV]"<< std::endl;
 	      std::cout << "Eta: "<< proton_eta_plus << ", phi: " << proton_phi_plus << ", pT: " << proton_pt_plus << " [GeV]"<< std::endl;
@@ -801,7 +799,7 @@ void SDDYAnalyzer::analyze(const edm::Event & ev, const edm::EventSetup&){
 	    math::XYZTLorentzVector vec_t_minus = (pf2 - pi2);
 	    t_minus=fabs(vec_t_minus.mag2());
 
-	    if (debug_proton){
+	    if (debug){
 	      std::cout << "\n< Proton Minus >" << std::endl;
 	      std::cout << "Quadrimomentum("<< proton_px_minus << "," << proton_py_minus << "," << proton_pz_minus << "," << proton_energy_minus << ") [GeV]"<< std::endl;
 	      std::cout << "Eta: "<< proton_eta_minus << ", phi: " << proton_phi_minus << ", pT: " << proton_pt_minus << "[GeV]"<< std::endl;
